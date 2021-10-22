@@ -1,4 +1,10 @@
+export type GameProps = {
+    gameState: GameState,
+    gameStateDispatcher: React.Dispatch<GameStateActions>,
+}
+
 export type GameState = {
+    phase: number;
     imagesBuffered: ImagesStatus;
     imagesLoaded: ImagesStatus;
     status: Status;
@@ -11,12 +17,7 @@ export type Status = 'NOT_STARTED' | 'INITIALIZED' | 'STARTED' | 'COUNTING_DOWN'
 
 export type GameStateActions = 
     { type: 'status', value: Status } |
+    { type: 'phase', value: number } |
     { type: 'imagesBuffered', value: ImagesStatus } |
     { type: 'imagesLoaded', value: ImagesStatus } |
     { type: 'isMapVisible', value: boolean};
-
-    
-export type GameProps = {
-    gameState: GameState,
-    gameStateDispatcher: React.Dispatch<GameStateActions>,
-}
