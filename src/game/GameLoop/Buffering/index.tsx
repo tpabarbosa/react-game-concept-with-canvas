@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GameState, GameStateActions } from "../../types/GameStatus"
+import { GameProps } from "../../types/GameStatus"
 import { MapBuffer } from './MapBuffer';
 import { ItemsBuffer } from './ItemsBuffer';
 import { MonstersBuffer } from './MonstersBuffer';
@@ -14,11 +14,10 @@ import { characters } from "../../constants/charactersTiles";
 
 
 type Props = {
-    gameState: GameState,
-    gameStateDispatcher: React.Dispatch<GameStateActions>,
+    onImagesBuffered: () => void,
 }
 
-export const Buffering = ({gameState, gameStateDispatcher}: Props) => {
+export const Buffering = ({gameState, gameStateDispatcher, onImagesBuffered}: GameProps & Props) => {
     const [mapBuffered, setMapBuffered] = useState<string[]>([]);
     const [monstersBuffered, setMonstersBuffered] = useState<string[]>([]);
     const [itemsBuffered, setItemsBuffered] = useState<string[]>([]);
@@ -55,9 +54,10 @@ export const Buffering = ({gameState, gameStateDispatcher}: Props) => {
             gameStateDispatcher({type: 'imagesBuffered', value: 'MONSTERS'})
         }
         if(gameState.imagesBuffered === 'MONSTERS') {
-            gameStateDispatcher({type: 'imagesBuffered', value: 'ALL_IMAGES'})
+            gameStateDispatcher({type: 'imagesBuffered', value: 'ALL_IMAGES'});
+            onImagesBuffered();
         }
-    },[mapBuffered, itemsBuffered, characterBuffered, monstersBuffered, gameStateDispatcher, gameState])
+    },[mapBuffered, itemsBuffered, characterBuffered, monstersBuffered, gameStateDispatcher, gameState, onImagesBuffered])
 
     return(
         <>

@@ -6,11 +6,12 @@ import { GameLoop } from './GameLoop';
 
 const App = () => {
   const initialGameStatus: GameState = {
-    phase: 1,
+    lives: 3,
+    phase: {showingPhase: 1, loadingPhase: 1},
     imagesBuffered: 'NO_IMAGES',
     imagesLoaded: 'NO_IMAGES',
     status: 'NOT_STARTED',
-    isMapVisible: true,
+    isMapVisible: false,
   };
 
   const gameStateReducer = (state: GameState, action: GameStateActions) => {
@@ -19,6 +20,8 @@ const App = () => {
         return {...state, status: action.value};
       case 'phase':
         return {...state, phase: action.value};
+      case 'lives':
+        return {...state, lives: action.value};
       case 'imagesBuffered':
         return {...state, imagesBuffered: action.value};
       case 'imagesLoaded':

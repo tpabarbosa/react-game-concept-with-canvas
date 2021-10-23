@@ -36,7 +36,7 @@ export const useCharacter = ({name, phase}: Props) => {
             if (newPos.x > 0 && newPos.y > 0 &&
                 mapDimensions.cols - 1 > newPos.x && 
                 mapDimensions.rows - 1 > newPos.y) {
-                return mapObjects[phase][newPos.y][newPos.x] === 0;
+                return mapObjects[phases[phase].objects][newPos.y][newPos.x] === 0;
             }
         return false;
     }

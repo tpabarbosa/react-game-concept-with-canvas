@@ -16,6 +16,7 @@ import { useKeyHandler } from './useKeyHandler';
 
 import { MapArea } from './MapArea';
 import { Buffering } from './Buffering';
+import { phases } from '../constants/phases';
 
 export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
     //
@@ -49,22 +50,33 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
     const onMonsterWin = useCallback(() => {
       if (gameState.status === 'RUNNING') {
         audioDefeat.play();
-        gameStateDispatcher({type: 'status', value: 'DEFEAT'});
+        if (gameState.lives > 1) {
+          gameStateDispatcher({type: 'lives', value: gameState.lives-1});
+          gameStateDispatcher({type: 'status', value: 'LIFE_LOST'});
+        } else {
+          gameStateDispatcher({type: 'lives', value: gameState.lives-1});
+          gameStateDispatcher({type: 'status', value: 'DEFEAT'});
+        }
+        
       }
-    }, [gameState.status, audioDefeat, gameStateDispatcher]);
+    }, [gameState.status, gameState.lives, audioDefeat, gameStateDispatcher]);
 
     const onCharWin = useCallback(() => {
       if (gameState.status === 'RUNNING') {
         audioVictory.play();
+
         gameStateDispatcher({type: 'status', value: 'VICTORY'});
       }
     }, [gameState.status, audioVictory, gameStateDispatcher]);
 
-
+    const onImagesBuffered = useCallback(() => {
+      gameStateDispatcher({type: 'isMapVisible', value: true});
+    }, [gameStateDispatcher]);
+    
     //
     //character creation 
     //
-    const char = useCharacter({name:'Tati', phase:1});
+    const char = useCharacter({name:'Tati', phase:gameState.phase.loadingPhase});
     //
     // Monsters creation
     //
@@ -74,35 +86,44 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
     //
     const items = useItems({onCollectedAll: onCharWin, gameState:gameState});
 
+    const stopLoopTimers = useCallback(()=> {
+      lastTimeChar.current=0;
+      lastTimeItems.current=0;
+      lastTimeMonsters.current=0
+      lastTimeMonstersChase.current=0;
+    }, [lastTimeMonsters, lastTimeChar, lastTimeItems, lastTimeMonstersChase])
+
+    const initialize = useCallback((type: 'NEW_PHASE' | 'SAME_PHASE')=> {
+      stopLoopTimers();
+      if (type === 'NEW_PHASE') {
+        items.init();
+        music.currentTime = 0;
+      }
+      char.init();
+      monsters.init();
+      setIsUpdateRequired(true);
+    }, [char, monsters, items, music, stopLoopTimers, setIsUpdateRequired])
 
     //Initializing game
     useEffect(() => {
       if(gameState.status==='NOT_STARTED' && gameState.imagesLoaded==='MONSTERS') {
-        char.init();
-        monsters.init();
-        items.init(20);
-        lastTimeChar.current=0;
-        lastTimeItems.current=0;
-        lastTimeMonsters.current=0
-        lastTimeMonstersChase.current=0;
-        music.loop = true;
-        music.currentTime = 0;
-        setIsUpdateRequired(true);
+        initialize('NEW_PHASE');
+        gameStateDispatcher({type: 'status', value: 'INITIALIZED'});
+      }
+      if(gameState.status==='RESTART_PHASE') {
+        initialize('SAME_PHASE');
         gameStateDispatcher({type: 'status', value: 'INITIALIZED'});
       }
       if(gameState.status==='RUNNING') {
         audioClockTicking.pause();
-        music.play();
       }
       if(gameState.status==='COUNTING_DOWN') {
+        music.loop = true;
         music.play();
       }
       if(gameState.status==='PAUSED') {
         music.pause();
-        lastTimeChar.current=0;
-        lastTimeItems.current=0;
-        lastTimeMonsters.current=0
-        lastTimeMonstersChase.current=0;
+        stopLoopTimers();
         audioClockTicking.loop=true;
         audioClockTicking.currentTime=0;
         audioClockTicking.play();
@@ -111,7 +132,7 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
       if(gameState.status==='DEFEAT' || gameState.status==='VICTORY') {
         music.pause();
       }
-    }, [gameState, char, monsters, items, gameStateDispatcher, music, audioClockTicking]);
+    }, [gameState, gameStateDispatcher, music, audioClockTicking, initialize, stopLoopTimers]);
 
     //
     // Keyboard Events
@@ -134,31 +155,31 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
     const tick = useCallback((time) => {
       setIsUpdateRequired(false);
       if(gameState.status === 'RUNNING') {
-        if(!lastTimeChar.current || time > lastTimeChar.current + 280) {
+        if(!lastTimeChar.current || time > lastTimeChar.current + phases[gameState.phase.loadingPhase].char.refreshTime) {
           lastTimeChar.current = time;
           char.move();
           items.checkCollected(char.position);
           setIsUpdateRequired(true);
         }
         //monsters animation
-        if(!lastTimeMonsters.current || time > lastTimeMonsters.current + 380) {
+        if(!lastTimeMonsters.current || time > lastTimeMonsters.current + phases[gameState.phase.loadingPhase].monsters.refreshTime) {
           lastTimeMonsters.current = time;
           monsters.move();
           setIsUpdateRequired(true);
         }
         //chasing animation
-        if(!lastTimeMonstersChase.current || (time > lastTimeMonstersChase.current + 6000 && !monsters.isChasing)) {
+        if(!lastTimeMonstersChase.current || (time > lastTimeMonstersChase.current + phases[gameState.phase.loadingPhase].monsters.retreatTime && !monsters.isChasing)) {
           lastTimeMonstersChase.current = time;
           monsters.changeChasingMode(true);
           setIsUpdateRequired(true);
         }
-        if(!lastTimeMonstersChase.current || (time > lastTimeMonstersChase.current + 12000 && monsters.isChasing)) {
+        if(!lastTimeMonstersChase.current || (time > lastTimeMonstersChase.current + phases[gameState.phase.loadingPhase].monsters.chasingTime && monsters.isChasing)) {
           lastTimeMonstersChase.current = time;
           monsters.changeChasingMode(false);
           setIsUpdateRequired(true);
         }
         //items animation
-        if(!lastTimeItems.current || time > lastTimeItems.current + 125){
+        if(!lastTimeItems.current || time > lastTimeItems.current + phases[gameState.phase.loadingPhase].items.refreshTime){
           lastTimeItems.current = time;
           items.animate();
           setIsUpdateRequired(true);
@@ -172,7 +193,7 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
       } 
       loopRef.current = requestAnimationFrame(tick);  
       
-    }, [isUpdateRequired, gameStateDispatcher,  gameState.status, items, char, monsters]);
+    }, [isUpdateRequired, gameStateDispatcher,  gameState.status, items, char, monsters, gameState.phase]);
 
     useEffect(() => {   
         loopRef.current = requestAnimationFrame(tick);
@@ -193,7 +214,7 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
                 height={height*scale}
             />
 
-            <Buffering gameState={gameState} gameStateDispatcher={gameStateDispatcher}/>
+            <Buffering gameState={gameState} gameStateDispatcher={gameStateDispatcher} onImagesBuffered={onImagesBuffered}/>
 
             {gameState.isMapVisible && gameState.imagesBuffered==='ALL_IMAGES' &&
                 <MapArea gameState={gameState} gameStateDispatcher={gameStateDispatcher} char={{direction: char.direction, pos: char.position}} activeMonsters={monsters.monsters} items={items.items} itemsFrame={items.itemsFrame} scale={scale}/>

@@ -2,11 +2,10 @@ import styled from 'styled-components';
 
 
 export const Container = styled.div`
-    
+    z-index: 1;
     canvas {
-        background-color: #1c1c1e;
+        position: absolute;
         margin: 10px;
-        z-index: 1;
         padding: 20px;
         border-radius: 20px;
     }

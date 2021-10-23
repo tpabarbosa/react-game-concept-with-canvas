@@ -30,9 +30,9 @@ export const useItems = ({ onCollectedAll, gameState}: Props) => {
     const [itemsFrame, setItemsFrame] = useState<number[]>([4]);
 
     const phase = useMemo(() => gameState.phase, [gameState.phase]);
-    const items = useMemo(() => phases[phase].items.list, [phase]);
-    const char = useMemo(() => phases[phase].char, [phase]);
-    const monsters = useMemo(() => phases[phase].monsters.list, [phase]);
+    const items = useMemo(() => phases[phase.loadingPhase].items.list, [phase]);
+    const char = useMemo(() => phases[phase.loadingPhase].char, [phase]);
+    const monsters = useMemo(() => phases[phase.loadingPhase].monsters.list, [phase]);
 
     const audio = useMemo(() => new Audio('assets/audios/coin.mp3'), []);
 
@@ -49,7 +49,7 @@ export const useItems = ({ onCollectedAll, gameState}: Props) => {
 
     const canBePlacedAt = useCallback((position: Position, itemsInList: ItemType[]) => {
         let canBePlaced = false;
-        if (mapObjects[1][position.y][position.x] === 0 && 
+        if (mapObjects[phases[phase.loadingPhase].objects][position.y][position.x] === 0 && 
             !Positions.areEqual(position,char.initialPosition)
             ) {
                 canBePlaced = true;
@@ -67,7 +67,7 @@ export const useItems = ({ onCollectedAll, gameState}: Props) => {
             return canBePlaced;
         }
         return canBePlaced;
-    }, [char.initialPosition, monsters]);
+    }, [char.initialPosition, monsters, phase.loadingPhase]);
     
 
     const createObjects = useCallback(()=> {

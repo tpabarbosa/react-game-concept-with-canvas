@@ -5,28 +5,33 @@ type Props = {
     color: string;
 }
 
-const {width, height, scale} = mapDimensions;
+const {scaledWidth, scaledHeight} = mapDimensions;
 
 export const Container = styled.div `
+    background-color: #1c1c1e;
     display:flex;
-    //box-sizing: border-box;
-    justify-content: center;
-    align-items: center;
     position: absolute;
-    margin: 5px;
-    width: ${width*scale}px;
-    height: ${height*scale}px;
-    text-align: center;
     border: 5px solid #768776;
     border-radius: 25px;
-    padding: 20px;
     box-shadow: inset 0 0 4px #bfc1bf, 0 0 4px #45eb45;
-    
 `;
 
-export const CounterDown = styled.div `
-    width: 35%;
+export const MapArea = styled.div`
     
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width: ${scaledWidth}px;
+    height: ${scaledHeight}px;
+    text-align: center;
+    margin: 5px;
+    padding: 20px;
+`;
+
+
+export const CounterDown = styled.div `
+z-index: 2;
+    width: 35%;
     padding: 20px 40px;
     opacity: 0.7;
     text-align: center;
@@ -39,7 +44,7 @@ export const CounterDown = styled.div `
 
 export const Info = styled.h1(({color}: Props) => (
     `
-    // position: absolute;
+    z-index: 3;
     top:0;//30px;
     width: 60%;//280px;
     left: 0;//60px;

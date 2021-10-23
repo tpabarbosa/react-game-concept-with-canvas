@@ -28,7 +28,7 @@ type Props = {
 export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
     const [monstersList, setMonstersList] = useState<MonsterType[]>([]);
     const phase = useMemo(() => gameState.phase, [gameState.phase]);
-    const monsters = useMemo(() => phases[phase].monsters.list, [phase]);
+    const monsters = useMemo(() => phases[phase.loadingPhase].monsters.list, [phase]);
 
     const audio = useMemo(() => new Audio('assets/audios/monster.mp3'), []);
     const audioChasing = useMemo(() => new Audio('assets/audios/chasing.mp3'), []);
@@ -51,7 +51,7 @@ export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
             if (newPos.x > 0 && newPos.y > 0 &&
                 mapDimensions.cols - 1 > newPos.x && 
                 mapDimensions.rows - 1 > newPos.y) {
-                return mapObjects[phase][newPos.y][newPos.x] === 0;
+                return mapObjects[phases[phase.loadingPhase].objects][newPos.y][newPos.x] === 0;
             }
         return false;
     }
