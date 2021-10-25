@@ -17,7 +17,7 @@ export const itemsTiles: ItemsTilesData = {
                 {x:1, y:0},
                 {x:2, y:0},
                 {x:3, y:0},
-            ]
+            ],
         },
         2: {file: 'assets/items/coin_silver.png',
             frames: [
@@ -29,7 +29,7 @@ export const itemsTiles: ItemsTilesData = {
                 {x:1, y:0},
                 {x:2, y:0},
                 {x:3, y:0},
-            ]
+            ],
         },
     }
     

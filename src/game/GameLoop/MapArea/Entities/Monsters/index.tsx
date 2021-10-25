@@ -7,12 +7,11 @@ import { monsters } from '../../../../constants/monstersTiles';
 
 type Props = {
     onLoadMonsters: () => void;
-    scale: number;
     mustRender: boolean;
     activeMonsters: MonsterType[];
 }
 
-export const Monsters = ({onLoadMonsters, activeMonsters, scale, mustRender}: Props) => {
+export const Monsters = ({onLoadMonsters, activeMonsters, mustRender}: Props) => {
     const ctx = useContext(CanvasContext);
 
     useEffect(() => {
@@ -25,7 +24,7 @@ export const Monsters = ({onLoadMonsters, activeMonsters, scale, mustRender}: Pr
                     key = 'common';
                 }
                 const img: HTMLImageElement | null = document.querySelector(`#monsters-tile-img-${key}`);
-               
+            
                 const data = monsters.list[monster.monster]?.directions ?? monsters.common?.directions;
                 const direction = data ? data[monster.direction] : undefined;
 
@@ -48,7 +47,7 @@ export const Monsters = ({onLoadMonsters, activeMonsters, scale, mustRender}: Pr
             })
             onLoadMonsters();
         };    
-    }, [ctx, onLoadMonsters, mustRender, activeMonsters, scale]);
+    }, [ctx, onLoadMonsters, mustRender, activeMonsters]);
     
 
     return (

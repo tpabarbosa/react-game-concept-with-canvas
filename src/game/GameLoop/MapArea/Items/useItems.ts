@@ -10,20 +10,23 @@ import { Position } from '../../../types/Position';
 
 import { phases } from '../../../constants/phases';
 import { mapObjects } from '../../../constants/mapObjects';
+import { itemsData } from '../../../constants/ItemsData';
 
 export type ItemType = {
     wasCollected: boolean;
     position: Position;
     item: number;
     type: number;
+    value: number;
 }
 
 type Props = {
     onCollectedAll: () => void;
+    updateCollected: (toAdd: number) => void;
     gameState: GameState;
 }
 
-export const useItems = ({ onCollectedAll, gameState}: Props) => {
+export const useItems = ({ updateCollected, onCollectedAll, gameState}: Props) => {
     const [collected, setCollected] = useState(0);
     const [totalItems, setTotalItems] = useState(0);
     const [itemsList, setItemsList] = useState<ItemType[]>([]);
@@ -87,6 +90,7 @@ export const useItems = ({ onCollectedAll, gameState}: Props) => {
                     position,
                     item: i+1,
                     type: item.item,
+                    value: itemsData[item.item].value,
                 }
                 newItemsList.push(newItem);
             }
@@ -103,6 +107,7 @@ export const useItems = ({ onCollectedAll, gameState}: Props) => {
                 if(!item.wasCollected && Positions.areEqual(item.position,charPosition)) {
                     item.wasCollected = true;
                     onCollected();
+                    updateCollected(item.value);
                 }
                 return item;
             });

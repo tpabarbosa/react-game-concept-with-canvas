@@ -9,11 +9,10 @@ type Props = {
     onLoadCharacter: () => void;
     direction: ValidDirections;
     position: Position;
-    scale:number;
     mustRender: boolean;
 }
 
-export const Character = ({onLoadCharacter, direction, position, scale, mustRender}: Props) => {
+export const Character = ({onLoadCharacter, direction, position, mustRender}: Props) => {
     const ctx = useContext(CanvasConext);
 
     useEffect(() => {
@@ -44,7 +43,7 @@ export const Character = ({onLoadCharacter, direction, position, scale, mustRend
             }
             
         };  
-    }, [ctx, mustRender, position, direction, scale, onLoadCharacter]);
+    }, [ctx, mustRender, position, direction, onLoadCharacter]);
     
 
     return (

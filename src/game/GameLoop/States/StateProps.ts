@@ -17,10 +17,21 @@ export type PhaseStatus = {
     setHasMonsterWin: (value: boolean) => void;
     setHasCharWin: (value: boolean) => void;
     updateLives: (value: number) => void;
+    updateCollected: (toAdd: number) => void;
     updatePhase: (toShow: number, toLoad: number) => void;
     stopLoopTimers: () => void;
 }
 
 export type StateProps = {
     phaseStatus: PhaseStatus;
+}
+
+export type StatesType = {
+    [state in Status]: StateType;
+  }
+
+  export type StateType =  () => {
+        handleKeyPress: (e: KeyboardEvent, {phaseStatus}:StateProps) => Actions | undefined | void;
+        handleState: ({phaseStatus}: StateProps) => Actions | undefined | void;
+  
 }

@@ -8,12 +8,11 @@ import { itemsTiles } from '../../../constants/itemsTiles';
 type Props = {
     onLoadItems: () => void;
     items: ItemType[];
-    scale: number;
     frame: number[];
     mustRender: boolean;
 }
 
-export const Items = ({onLoadItems, items, scale, frame, mustRender}: Props) => {
+export const Items = ({onLoadItems, items, frame, mustRender}: Props) => {
     const ctx = useContext(CanvasConext);
 
     useEffect(() => {
@@ -52,7 +51,7 @@ export const Items = ({onLoadItems, items, scale, frame, mustRender}: Props) => 
             
         }
             
-    }, [ctx, items, onLoadItems, frame, mustRender, scale]);
+    }, [ctx, items, onLoadItems, frame, mustRender]);
     
 
     return (

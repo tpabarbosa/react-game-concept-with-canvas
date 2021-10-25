@@ -10,6 +10,7 @@ export type GameState = {
     imagesLoaded: ImagesStatus;
     status: Status;
     isMapVisible: boolean;
+    totalCollected: number;
 }
 
 export type Phases = {
@@ -69,6 +70,7 @@ export type GameStateActions =
     { type: 'status', value: Status } |
     { type: 'phase', value: Phases } |
     { type: 'lives', value: number } |
+    { type: 'totalCollected', value: number } |
     { type: 'imagesBuffered', value: ImagesStatus } |
     { type: 'imagesLoaded', value: ImagesStatus } |
     { type: 'isMapVisible', value: boolean};

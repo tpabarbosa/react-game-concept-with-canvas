@@ -5,23 +5,10 @@ import { Stats } from './Stats';
 type Props = {
     counterDown: any;
     gameState: GameState;
+    audioPlayer: any;
 }
 
-export const GameUI = ({ counterDown, gameState }: Props) => {
-
-    // const counterDown = useCounterDown({initial: 3});
-
-    // useEffect(()=>{
-    //     if(gameState.status === 'STARTED' && !counterDown.isCounting) {
-    //         gameStateDispatcher({type: 'status', value: 'COUNTING_DOWN'});
-    //         counterDown.start();
-    //     }
-    //     if(gameState.status ==='COUNTING_DOWN' && counterDown.count===0) {
-    //         gameStateDispatcher({type: 'status', value: 'RUNNING'});
-    //     }
-            
-    // }, [gameState.status, counterDown, gameStateDispatcher]);
-
+export const GameUI = ({ counterDown, gameState, audioPlayer }: Props) => {
 
     return (
         
@@ -62,7 +49,7 @@ export const GameUI = ({ counterDown, gameState }: Props) => {
                 </S.Info>
             }
             </S.MapArea>
-            <Stats phase={gameState.phase.showingPhase} lives={gameState.lives} mustClean={gameState.status==='NOT_STARTED'} mustRender={gameState.status==='NOT_STARTED'}/>
+            <Stats phase={gameState.phase.showingPhase} lives={gameState.lives} mustClean={gameState.status==='NOT_STARTED'} mustRender={gameState.status==='NOT_STARTED'} totalCollected={gameState.totalCollected}/>
         </S.Container>
 
         

@@ -1,9 +1,10 @@
 import { ValidDirections } from "../../types/Directions";
+import { Actions } from "../../types/GameState";
 import { StateProps } from "./StateProps";
 
 export const runningState =  () => {
 
-    const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps) => {
+    const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps): Actions | undefined | void => {
         if (e.code === 'Enter') {
             return 'PAUSE_COMMAND';
         }
@@ -30,15 +31,17 @@ export const runningState =  () => {
             }
     }
 
-    const handleState = ({phaseStatus}: StateProps) => {
+    const handleState = ({phaseStatus}: StateProps): Actions | undefined | void => {
         phaseStatus.audioPlayer.stop('clockTicking');
         if(phaseStatus.hasMonsterWin) {
             phaseStatus.updateLives(phaseStatus.lives-1);
+            phaseStatus.audioPlayer.play('defeated');
             return phaseStatus.lives > 1
                 ? 'LIFE_LOST'
                 : 'LOST_ALL_LIVES';
         }
         if (phaseStatus.hasCharWin) {
+            phaseStatus.audioPlayer.play('victory');
             return 'COLLECTED_ALL_ITEMS';
         }
     }

@@ -1,8 +1,9 @@
+import { Actions } from "../../types/GameState";
 import { StateProps } from "./StateProps";
 
 export const initializedState =  () => {
 
-    const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps) => {
+    const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps): Actions | undefined | void => {
         if (e.code === 'Enter') {
             phaseStatus.setHasMonsterWin(false);
             phaseStatus.setHasCharWin(false);
@@ -11,7 +12,7 @@ export const initializedState =  () => {
         return;
     }
 
-    const handleState = ({phaseStatus}: StateProps) => {
+    const handleState = ({phaseStatus}: StateProps): Actions | undefined | void => {
     }
 
     return { 

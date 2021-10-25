@@ -8,11 +8,12 @@ import { mapObjects } from "../../../constants/mapObjects";
 
 type Props = {
     onLoadMap: (value?: boolean) => void;
-    scale: number;
     mustRender: boolean;
+    background: number;
+    objects: number;
 }
 
-export const Map = ({onLoadMap, scale, mustRender}: Props) => {
+export const Map = ({onLoadMap, mustRender, background, objects}: Props) => {
     const ctx = useContext(CanvasContext);
 
     useEffect(() => {
@@ -44,13 +45,14 @@ export const Map = ({onLoadMap, scale, mustRender}: Props) => {
                     }
                 }
             };
-            drawLayer(mapBackgrounds[1]);
-            drawLayer(mapObjects[1]);
+            drawLayer(mapBackgrounds[background]);
+            drawLayer(mapObjects[objects]);
 
             onLoadMap();
         }
 
-    }, [ctx, onLoadMap, mustRender, scale]);
+    }, [ctx, onLoadMap, mustRender, background, objects]);
+
 
     return (
         <>

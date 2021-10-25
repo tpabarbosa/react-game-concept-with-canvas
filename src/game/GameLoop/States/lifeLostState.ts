@@ -1,21 +1,16 @@
+import { Actions } from "../../types/GameState";
 import { StateProps } from "./StateProps";
 
 export const lifeLostState =  () => {
-    let playAudio= true;
 
-    const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps) => {
+    const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps): Actions | undefined | void => {
         if (e.code === 'Enter') {
-            playAudio = true;
             return 'REINITIALIZE_COMMAND';
         }
     }
 
-    const handleState = ({phaseStatus}: StateProps) => {
-        if (playAudio) {
-            phaseStatus.audioPlayer.play('defeated');
-            playAudio = false;
-        }
-        
+    const handleState = ({phaseStatus}: StateProps): Actions | undefined | void => {
+        //phaseStatus.audioPlayer.stop('music');
     }
 
     return { 

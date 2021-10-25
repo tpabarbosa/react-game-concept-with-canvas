@@ -25,3 +25,12 @@ export const Lives = styled.div `
     color: darkgreen;
     margin:16px 0;
 `;
+
+export const Collected = styled.div `
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: white;
+    color: darkgreen;
+    margin:16px 0;
+`;

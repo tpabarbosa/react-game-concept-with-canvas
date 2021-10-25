@@ -15,16 +15,16 @@ import { Items } from './Items';
 
 import { Position } from '../../types/Position';
 import { ValidDirections } from '../../types/Directions';
+import { phases } from '../../constants/phases';
 
 type Props = {
     char: {direction: ValidDirections, pos: Position};
     activeMonsters: MonsterType[];
     items: ItemType[];
     itemsFrame: number[];
-    scale: number;
 }
 
-export const MapArea = ({gameState, gameStateDispatcher, char, activeMonsters, items, itemsFrame, scale}: Props & GameProps) => {
+export const MapArea = ({gameState, gameStateDispatcher, char, activeMonsters, items, itemsFrame}: Props & GameProps) => {
 
     const [mustRenderMap, setMustRenderMap] = useState(true);
     const [mustRenderItems, setMustRenderItems] = useState(true);
@@ -66,8 +66,9 @@ export const MapArea = ({gameState, gameStateDispatcher, char, activeMonsters, i
                 {/* <Grid scale={scale}> */}
                     <Map 
                         onLoadMap={onLoadMap} 
-                        scale={scale}
                         mustRender={mustRenderMap}
+                        background={phases[gameState.phase.loadingPhase].background}
+                        objects={phases[gameState.phase.loadingPhase].objects}
                     />    
                 {/* </Grid> */}
             </>
@@ -76,7 +77,6 @@ export const MapArea = ({gameState, gameStateDispatcher, char, activeMonsters, i
                 <Items 
                     items={items} 
                     onLoadItems={onLoadItems}
-                    scale={scale}  
                     frame={itemsFrame}  
                     mustRender={mustRenderItems}
                 />
@@ -87,7 +87,6 @@ export const MapArea = ({gameState, gameStateDispatcher, char, activeMonsters, i
                     direction={char.direction} 
                     position={char.pos} 
                     onLoadCharacter={onLoadCharacter}
-                    scale={scale}
                     mustRender={mustRenderCharacter}
                 />
             }
@@ -96,7 +95,6 @@ export const MapArea = ({gameState, gameStateDispatcher, char, activeMonsters, i
                 <Monsters 
                     activeMonsters={activeMonsters}
                     onLoadMonsters={onLoadMonsters}
-                    scale={scale}
                     mustRender={mustRenderMonsters}
                 />
             }
