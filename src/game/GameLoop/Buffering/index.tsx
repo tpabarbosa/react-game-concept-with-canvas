@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GameProps } from "../../types/GameStatus"
+import { GameProps } from "../../types/GameState"
 import { MapBuffer } from './MapBuffer';
 import { ItemsBuffer } from './ItemsBuffer';
 import { MonstersBuffer } from './MonstersBuffer';

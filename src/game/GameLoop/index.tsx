@@ -1,9 +1,9 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import * as S from './styles';
 
 import CanvasContext from "./CanvasContext";
 
-import { GameProps } from '../types/GameStatus';
+import { Actions, GameProps, transitions } from '../types/GameState';
 
 import { mapDimensions } from '../constants/mapDimensions'
 
@@ -11,14 +11,25 @@ import { useCharacter } from './MapArea/Entities/Character/useCharacter';
 import { useMonsters } from './MapArea/Entities/Monsters/useMonsters';
 import { useItems } from './MapArea/Items/useItems';
 
-import { useEvent } from '../../hooks/useEvent';
-import { useKeyHandler } from './useKeyHandler';
-
 import { MapArea } from './MapArea';
 import { Buffering } from './Buffering';
 import { phases } from '../constants/phases';
+import { useNotStartedState } from './States/useNotStartedState';
+import { useInitializedState } from './States/useInitializedState';
+import { useRunningState } from './States/useRunningState';
+import { useStartedState } from './States/useStartedState';
+import { useCountingDownState } from './States/useCountingDownState';
+import { usePausedState } from './States/usePausedState';
+import { useLifeLostState } from './States/useLifeLostState';
+import { useDefeatedState } from './States/useDefeatedState';
+import { useReinitializedPhaseState } from './States/useReinitializedPhaseState';
+import { useVictoryState } from './States/useVictoryState';
 
-export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
+type Props = {
+  counterDown: any;
+}
+
+export const GameLoop = ({ gameState, gameStateDispatcher, counterDown}: GameProps & Props) => {
     //
     // canvas
     //
@@ -27,6 +38,7 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
     const [ctx, setCtx] = useState<CanvasRenderingContext2D| null>(null);
     const [isUpdateRequired, setIsUpdateRequired] = useState(false);
     const loopRef = useRef<number>();
+
     const lastTimeChar = useRef<number>();
     const lastTimeMonsters = useRef<number>();
     const lastTimeMonstersChase = useRef<number>();
@@ -43,31 +55,18 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
         }
     }, [setCtx, canvasRef]);
 
-    
-//
+    //
     //End Game Conditions
     //
-    const onMonsterWin = useCallback(() => {
-      if (gameState.status === 'RUNNING') {
-        audioDefeat.play();
-        if (gameState.lives > 1) {
-          gameStateDispatcher({type: 'lives', value: gameState.lives-1});
-          gameStateDispatcher({type: 'status', value: 'LIFE_LOST'});
-        } else {
-          gameStateDispatcher({type: 'lives', value: gameState.lives-1});
-          gameStateDispatcher({type: 'status', value: 'DEFEAT'});
-        }
+    const [hasMonsterWin, setHasMonsterWin] = useState(false);
+    const onMonsterWin = () => setHasMonsterWin(true);
         
-      }
-    }, [gameState.status, gameState.lives, audioDefeat, gameStateDispatcher]);
+    const [hasCharWin, setHasCharWin] = useState(false);
+    const onCharWin = () => setHasCharWin(true);
 
-    const onCharWin = useCallback(() => {
-      if (gameState.status === 'RUNNING') {
-        audioVictory.play();
+    const updateLives = (value: number) => gameStateDispatcher({type: 'lives', value: value});
 
-        gameStateDispatcher({type: 'status', value: 'VICTORY'});
-      }
-    }, [gameState.status, audioVictory, gameStateDispatcher]);
+    const updatePhase = (toShow:number, toLoad: number) => gameStateDispatcher({type: 'phase', value: {showingPhase: toShow, loadingPhase: toLoad}});
 
     const onImagesBuffered = useCallback(() => {
       gameStateDispatcher({type: 'isMapVisible', value: true});
@@ -93,64 +92,40 @@ export const GameLoop = ({ gameState, gameStateDispatcher}: GameProps) => {
       lastTimeMonstersChase.current=0;
     }, [lastTimeMonsters, lastTimeChar, lastTimeItems, lastTimeMonstersChase])
 
-    const initialize = useCallback((type: 'NEW_PHASE' | 'SAME_PHASE')=> {
-      stopLoopTimers();
-      if (type === 'NEW_PHASE') {
-        items.init();
-        music.currentTime = 0;
-      }
-      char.init();
-      monsters.init();
-      setIsUpdateRequired(true);
-    }, [char, monsters, items, music, stopLoopTimers, setIsUpdateRequired])
 
-    //Initializing game
-    useEffect(() => {
-      if(gameState.status==='NOT_STARTED' && gameState.imagesLoaded==='MONSTERS') {
-        initialize('NEW_PHASE');
-        gameStateDispatcher({type: 'status', value: 'INITIALIZED'});
-      }
-      if(gameState.status==='RESTART_PHASE') {
-        initialize('SAME_PHASE');
-        gameStateDispatcher({type: 'status', value: 'INITIALIZED'});
-      }
-      if(gameState.status==='RUNNING') {
-        audioClockTicking.pause();
-      }
-      if(gameState.status==='COUNTING_DOWN') {
-        music.loop = true;
-        music.play();
-      }
-      if(gameState.status==='PAUSED') {
-        music.pause();
-        stopLoopTimers();
-        audioClockTicking.loop=true;
-        audioClockTicking.currentTime=0;
-        audioClockTicking.play();
-      }
+const transition = useCallback((action: Actions | undefined, update: boolean = false) => {
+  const newStatus = action ? transitions[gameState.status][action]: undefined;
+  if (newStatus) {
+    console.log(newStatus);
+    gameStateDispatcher({type: 'status', value: newStatus});
+  }
+  if (update) {
+    setIsUpdateRequired(true);
+  }
+}, [gameState.status, gameStateDispatcher]);
+  
 
-      if(gameState.status==='DEFEAT' || gameState.status==='VICTORY') {
-        music.pause();
-      }
-    }, [gameState, gameStateDispatcher, music, audioClockTicking, initialize, stopLoopTimers]);
+  //const notStarted = 
+  useNotStartedState({transition, gameState, items, music,   char, monsters, stopLoopTimers});
+  //const initialized = 
+  useInitializedState({transition, gameState, setHasMonsterWin, setHasCharWin});
+  //const started = 
+  useStartedState({transition, gameState, counterDown, music});
+  //const countingDown = 
+  useCountingDownState({transition, gameState, counterDown, music});
+  //const running = 
+  useRunningState({transition, gameState, char, hasMonsterWin, hasCharWin, updateLives});
+  //const paused = 
+  usePausedState({transition, gameState, music, audioClockTicking, stopLoopTimers});
 
-    //
-    // Keyboard Events
-    //
-    const keyHandler = useKeyHandler({ gameState, gameStateDispatcher } );
+  useLifeLostState({transition, gameState, audioDefeat});
 
-    //change character direction
-    const handleCharacterDirection = useCallback((e: KeyboardEvent) => {
-        const direction = keyHandler.handleCharacterDirection(e);
-        if (direction) {
-          char.changeDirection(direction);
-      }
-      
-    },[char, keyHandler]);
+  useDefeatedState({transition, gameState, audioDefeat, updateLives, updatePhase, music});
 
-    useEvent('keyup', handleCharacterDirection);
-    useEvent('keyup', keyHandler.handleGameStatus);
+  useReinitializedPhaseState({transition, gameState, char, monsters, stopLoopTimers});
 
+  useVictoryState({transition, gameState, audioVictory, updatePhase, music})
+    
 
     const tick = useCallback((time) => {
       setIsUpdateRequired(false);

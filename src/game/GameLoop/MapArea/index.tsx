@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { GameProps } from '../../types/GameStatus';
+import { GameProps } from '../../types/GameState';
 
 import { Grid } from './Grid';
 import { Map } from './Map';

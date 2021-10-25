@@ -1,23 +1,26 @@
-import { useEffect } from 'react';
 import * as S from './styles';
-import { GameProps } from '../types/GameStatus';
-import { useCounterDown } from '../../hooks/useCounterDown';
+import { GameState } from '../types/GameState';
 import { Stats } from './Stats';
 
-export const GameUI = ({ gameState, gameStateDispatcher}: GameProps) => {
+type Props = {
+    counterDown: any;
+    gameState: GameState;
+}
 
-    const counterDown = useCounterDown({initial: 3});
+export const GameUI = ({ counterDown, gameState }: Props) => {
 
-    useEffect(()=>{
-        if(gameState.status === 'STARTED' && !counterDown.isCounting) {
-            gameStateDispatcher({type: 'status', value: 'COUNTING_DOWN'});
-            counterDown.start();
-        }
-        if(gameState.status ==='COUNTING_DOWN' && counterDown.count===0) {
-            gameStateDispatcher({type: 'status', value: 'RUNNING'});
-        }
+    // const counterDown = useCounterDown({initial: 3});
+
+    // useEffect(()=>{
+    //     if(gameState.status === 'STARTED' && !counterDown.isCounting) {
+    //         gameStateDispatcher({type: 'status', value: 'COUNTING_DOWN'});
+    //         counterDown.start();
+    //     }
+    //     if(gameState.status ==='COUNTING_DOWN' && counterDown.count===0) {
+    //         gameStateDispatcher({type: 'status', value: 'RUNNING'});
+    //     }
             
-    }, [gameState.status, counterDown, gameStateDispatcher]);
+    // }, [gameState.status, counterDown, gameStateDispatcher]);
 
 
     return (
@@ -31,7 +34,7 @@ export const GameUI = ({ gameState, gameStateDispatcher}: GameProps) => {
                 </S.CounterDown>
             }
 
-            {gameState.status==='DEFEAT' &&
+            {gameState.status==='DEFEATED' &&
                 <S.Info color={'red'}>
                     <div>Você Perdeu</div>
                     <div>😭</div> 

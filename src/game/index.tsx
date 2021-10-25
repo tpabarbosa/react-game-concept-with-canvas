@@ -1,8 +1,9 @@
 import { useReducer } from 'react';
 import * as S from './styles';
-import { GameState, GameStateActions } from './types/GameStatus';
+import { GameState, GameStateActions } from './types/GameState';
 import { GameUI } from './GameUI';
 import { GameLoop } from './GameLoop';
+import { useCounterDown } from '../hooks/useCounterDown';
 
 const App = () => {
   const initialGameStatus: GameState = {
@@ -33,15 +34,18 @@ const App = () => {
     } 
   }
 
+  const counterDown = useCounterDown({initial: 3});
+
   const [gameState, dispatchGameState] = useReducer(gameStateReducer, initialGameStatus);
   
   return (
     <S.Container>
       <GameUI gameState={gameState} 
-        gameStateDispatcher={dispatchGameState}/>
+        counterDown={counterDown}/>
       <GameLoop 
         gameState={gameState} 
-        gameStateDispatcher={dispatchGameState}/>
+        gameStateDispatcher={dispatchGameState}
+        counterDown={counterDown}/>
     </S.Container>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { GameState } from "../../../../types/GameStatus"
+import { GameState } from "../../../../types/GameState"
 
 import {getRandomInt} from '../../../../../helpers/randomNumbers';
 import * as Positions from '../../../../services/positionService';

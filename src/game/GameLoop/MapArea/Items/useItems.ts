@@ -4,7 +4,7 @@ import { mapDimensions } from '../../../constants/mapDimensions';
 
 import {itemsTiles} from '../../../constants/itemsTiles';
 import {getRandomInt} from '../../../../helpers/randomNumbers';
-import {GameState} from '../../../types/GameStatus';
+import {GameState} from '../../../types/GameState';
 import * as Positions from '../../../services/positionService';
 import { Position } from '../../../types/Position';
 
