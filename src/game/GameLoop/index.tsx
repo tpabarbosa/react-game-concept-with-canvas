@@ -1,9 +1,9 @@
-import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import * as S from './styles';
 
 import CanvasContext from "./CanvasContext";
 
-import { Actions, GameProps, transitions } from '../types/GameState';
+import { Actions, GameProps, Status, transitions } from '../types/GameState';
 
 import { mapDimensions } from '../constants/mapDimensions'
 
@@ -14,16 +14,20 @@ import { useItems } from './MapArea/Items/useItems';
 import { MapArea } from './MapArea';
 import { Buffering } from './Buffering';
 import { phases } from '../constants/phases';
-import { useNotStartedState } from './States/useNotStartedState';
-import { useInitializedState } from './States/useInitializedState';
-import { useRunningState } from './States/useRunningState';
-import { useStartedState } from './States/useStartedState';
-import { useCountingDownState } from './States/useCountingDownState';
-import { usePausedState } from './States/usePausedState';
-import { useLifeLostState } from './States/useLifeLostState';
-import { useDefeatedState } from './States/useDefeatedState';
-import { useReinitializedPhaseState } from './States/useReinitializedPhaseState';
-import { useVictoryState } from './States/useVictoryState';
+import { useAudioPlayer } from './AudioPlayer/useAudioPlayer';
+
+import { countingDownState } from './States/countingDownState';
+import { PhaseStatus } from './States/StateProps';
+import { defeatedState } from './States/defeatedState';
+import { initializedState } from './States/initializedState';
+import { lifeLostState } from './States/lifeLostState';
+import { notStartedState } from './States/notStartedState';
+import { reinitializedState } from './States/reinitializedState';
+import { pausedState } from './States/pausedState';
+import { runningState } from './States/runningState';
+import { startedState } from './States/startedState';
+import { victoryState } from './States/victoryState';
+import { useEvent } from '../../hooks/useEvent';
 
 type Props = {
   counterDown: any;
@@ -44,10 +48,7 @@ export const GameLoop = ({ gameState, gameStateDispatcher, counterDown}: GamePro
     const lastTimeMonstersChase = useRef<number>();
     const lastTimeItems = useRef<number>();
 
-    const music = useMemo(() => new Audio('assets/audios/music.mp3'), []);
-    const audioVictory = useMemo(() => new Audio('assets/audios/victory.mp3'), []);
-    const audioDefeat = useMemo(() => new Audio('assets/audios/defeated.mp3'), []);
-    const audioClockTicking = useMemo(() => new Audio('assets/audios/clock_ticking.mp3'), []);
+    const audioPlayer = useAudioPlayer();
 
     useEffect(() => {
         if (canvasRef.current) {
@@ -64,9 +65,13 @@ export const GameLoop = ({ gameState, gameStateDispatcher, counterDown}: GamePro
     const [hasCharWin, setHasCharWin] = useState(false);
     const onCharWin = () => setHasCharWin(true);
 
-    const updateLives = (value: number) => gameStateDispatcher({type: 'lives', value: value});
+    const updateLives = useCallback((value: number) => {
+      gameStateDispatcher({type: 'lives', value: value})
+    },[gameStateDispatcher]);
 
-    const updatePhase = (toShow:number, toLoad: number) => gameStateDispatcher({type: 'phase', value: {showingPhase: toShow, loadingPhase: toLoad}});
+    const updatePhase = useCallback((toShow:number, toLoad: number) =>{
+      gameStateDispatcher({type: 'phase', value: {showingPhase: toShow, loadingPhase: toLoad}})
+    },[gameStateDispatcher]);
 
     const onImagesBuffered = useCallback(() => {
       gameStateDispatcher({type: 'isMapVisible', value: true});
@@ -93,39 +98,66 @@ export const GameLoop = ({ gameState, gameStateDispatcher, counterDown}: GamePro
     }, [lastTimeMonsters, lastTimeChar, lastTimeItems, lastTimeMonstersChase])
 
 
-const transition = useCallback((action: Actions | undefined, update: boolean = false) => {
+    const phaseStatus: PhaseStatus = useMemo(() => {return {
+      char,
+      items,
+      monsters,
+      hasMonsterWin,
+      hasCharWin,
+      audioPlayer,
+      counterDown,
+      gameStatus: gameState.status,
+      imagesLoaded: gameState.imagesLoaded,
+      lives: gameState.lives,
+      showingPhase: gameState.phase.showingPhase,
+      loadingPhase: gameState.phase.loadingPhase,
+      setIsUpdateRequired,
+      setHasMonsterWin,
+      setHasCharWin,
+      updateLives,
+      updatePhase,
+      stopLoopTimers
+    }},[char, items, monsters, hasMonsterWin, hasCharWin, audioPlayer, counterDown, gameState, stopLoopTimers, updateLives, updatePhase]);
+
+type statesType = {
+  [state in Status]:() => any;
+}
+
+const states:statesType   = useMemo(()=> {return {
+  'COUNTING_DOWN': () => countingDownState(),
+  'DEFEATED': ( ) => defeatedState(),
+  'INITIALIZED': ( ) => initializedState(),
+  'LIFE_LOST': ( ) => lifeLostState(),
+  'NOT_STARTED': ( ) => notStartedState(),
+  'PAUSED': ( ) => pausedState(),
+  'REINITIALIZED_PHASE': ( ) => reinitializedState(),
+  'RUNNING': ( ) => runningState(),
+  'STARTED': ( ) => startedState(),
+  'VICTORY': ( ) => victoryState(),
+}},[]);
+
+const [state, setState] = useState(states[gameState.status]);
+
+const transition = useCallback((action: Actions | undefined) => {
   const newStatus = action ? transitions[gameState.status][action]: undefined;
   if (newStatus) {
     console.log(newStatus);
     gameStateDispatcher({type: 'status', value: newStatus});
+    setState(states[newStatus]);
   }
-  if (update) {
-    setIsUpdateRequired(true);
-  }
-}, [gameState.status, gameStateDispatcher]);
+}, [gameState.status, gameStateDispatcher, setState, states]);
   
 
-  //const notStarted = 
-  useNotStartedState({transition, gameState, items, music,   char, monsters, stopLoopTimers});
-  //const initialized = 
-  useInitializedState({transition, gameState, setHasMonsterWin, setHasCharWin});
-  //const started = 
-  useStartedState({transition, gameState, counterDown, music});
-  //const countingDown = 
-  useCountingDownState({transition, gameState, counterDown, music});
-  //const running = 
-  useRunningState({transition, gameState, char, hasMonsterWin, hasCharWin, updateLives});
-  //const paused = 
-  usePausedState({transition, gameState, music, audioClockTicking, stopLoopTimers});
-
-  useLifeLostState({transition, gameState, audioDefeat});
-
-  useDefeatedState({transition, gameState, audioDefeat, updateLives, updatePhase, music});
-
-  useReinitializedPhaseState({transition, gameState, char, monsters, stopLoopTimers});
-
-  useVictoryState({transition, gameState, audioVictory, updatePhase, music})
+  useEffect(() => {
+    transition(state.handleState({phaseStatus}));
     
+  },[state, phaseStatus, transition])
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+    transition(state.handleKeyPress(e,{phaseStatus}));
+  }
+
+  useEvent('keyup', handleKeyPress);
 
     const tick = useCallback((time) => {
       setIsUpdateRequired(false);

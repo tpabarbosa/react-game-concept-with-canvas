@@ -21,21 +21,7 @@ export type ImagesStatus = 'NO_IMAGES'| 'MAP' | 'ITEMS' | 'CHARACTER' | 'MONSTER
 
 export type Status = 'NOT_STARTED' | 'LIFE_LOST' | 'REINITIALIZED_PHASE' | 'INITIALIZED' | 'STARTED' | 'COUNTING_DOWN' | 'RUNNING' | 'PAUSED' | 'DEFEATED' | 'VICTORY' ;
 
-// const states:{[state in Status]: Status} = {
-//     NOT_STARTED: 'NOT_STARTED',
-//     LIFE_LOST: 'LIFE_LOST',
-//     REINITIALIZED_PHASE: 'REINITIALIZED_PHASE',
-//     INITIALIZED: 'INITIALIZED',
-//     STARTED: 'STARTED',
-//     COUNTING_DOWN: 'COUNTING_DOWN',
-//     RUNNING: 'RUNNING',
-//     PAUSED: 'PAUSED',
-//     DEFEATED: 'DEFEATED',
-//     VICTORY: 'VICTORY',
-// }
-
 export type Actions = 'IMAGES_LOADED' | 'START_COMMAND' | 'INITIALIZED' | 'BEGIN_COUNTING_DOWN' | 'FINISH_COUNTING_DOWN' | 'PAUSE_COMMAND' | 'LIFE_LOST' | 'LOST_ALL_LIVES' | 'COLLECTED_ALL_ITEMS' | 'REINITIALIZE_COMMAND' | 'NEW_GAME_COMMAND' | 'UNPAUSE_COMMAND';
-
 
 type Transitions = {
     [state in Status]: {[actions in Actions]?: Status};
