@@ -1,10 +1,11 @@
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import * as S from './styles';
 import { GameState, GameStateActions } from './types/GameState';
 import { GameUI } from './GameUI';
 import { GameLoop } from './GameLoop';
 import { useCounterDown } from '../hooks/useCounterDown';
 import { useAudioPlayer } from './GameLoop/AudioPlayer/useAudioPlayer';
+import { ValidDirections } from './types/Directions';
 
 const App = () => {
   const initialGameStatus: GameState = {
@@ -43,13 +44,27 @@ const App = () => {
   const audioPlayer = useAudioPlayer();
 
   const [gameState, dispatchGameState] = useReducer(gameStateReducer, initialGameStatus);
+
+  const [userLastInput, setUserLastInput] = useState<{subtype: string, value:ValidDirections|null}|null>(null);
+
+  const handleButtonClick = (subtype: string, value: ValidDirections|null) => {
+    setUserLastInput({subtype: subtype, value:value});
+  }
+
+  const onHandledButtonClick = () => {
+    setUserLastInput(null);
+  } 
   
   return (
     <S.Container>
-      <GameUI gameState={gameState} 
+      <GameUI 
+        onButtonClick={handleButtonClick}
+        gameState={gameState} 
         counterDown={counterDown}
         audioPlayer={audioPlayer} />
       <GameLoop 
+        userLastInput={userLastInput}
+        onHandledButtonClick={onHandledButtonClick}
         gameState={gameState} 
         gameStateDispatcher={dispatchGameState}
         counterDown={counterDown}

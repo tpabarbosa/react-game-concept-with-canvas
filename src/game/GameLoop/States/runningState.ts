@@ -1,8 +1,28 @@
 import { ValidDirections } from "../../types/Directions";
 import { Actions } from "../../types/GameState";
-import { StateProps } from "./StateProps";
+import { StateProps, StateType, UserInputType } from "./StateProps";
 
-export const runningState =  () => {
+export const runningState:StateType =  () => {
+
+    const handleUserInput = ({input}: UserInputType, phaseStatus: StateProps) => {
+        if (input.type==='keypress') {
+            return handleKeyPress(input.value, phaseStatus)
+        }
+        if (input.type==='buttonclick') {
+            return handleButtonClick(input.subtype, input.value, phaseStatus)
+        }
+    }
+
+    const handleButtonClick = (subtype:string, value: ValidDirections | null, {phaseStatus}: StateProps) => {
+        if (subtype === 'changeDirections') {
+            
+            phaseStatus.char.changeDirection(value);
+            return
+        }
+        if (subtype === 'changeState') {
+            return 'PAUSE_COMMAND';
+        }
+    }
 
     const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps): Actions | undefined | void => {
         if (e.code === 'Enter') {
@@ -44,10 +64,19 @@ export const runningState =  () => {
             phaseStatus.audioPlayer.play('victory');
             return 'COLLECTED_ALL_ITEMS';
         }
+        
+        if (phaseStatus.monsters.isCloseToChar()) {
+            phaseStatus.audioPlayer.play('monster');
+        }
+    
+        if (phaseStatus.monsters.changedChasingMode) {
+            phaseStatus.audioPlayer.play('chasing');
+        }
+        
     }
 
     return { 
-        handleKeyPress,
+        handleUserInput,
         handleState
     }
 }

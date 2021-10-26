@@ -1,14 +1,18 @@
 import * as S from './styles';
 import { GameState } from '../types/GameState';
 import { Stats } from './Stats';
+import { AudioController } from './AudioController';
+import { ButtonsController } from './ButtonsController';
+import { ValidDirections } from '../types/Directions';
 
 type Props = {
     counterDown: any;
     gameState: GameState;
     audioPlayer: any;
+    onButtonClick: (subtype: string, value: ValidDirections|null) => void;
 }
 
-export const GameUI = ({ counterDown, gameState, audioPlayer }: Props) => {
+export const GameUI = ({ onButtonClick, counterDown, gameState, audioPlayer }: Props) => {
 
     return (
         
@@ -49,9 +53,13 @@ export const GameUI = ({ counterDown, gameState, audioPlayer }: Props) => {
                 </S.Info>
             }
             </S.MapArea>
-            <Stats phase={gameState.phase.showingPhase} lives={gameState.lives} mustClean={gameState.status==='NOT_STARTED'} mustRender={gameState.status==='NOT_STARTED'} totalCollected={gameState.totalCollected}/>
+            <Stats phase={gameState.phase.showingPhase} lives={gameState.lives} mustClean={gameState.status==='NOT_STARTED'} mustRender={gameState.status==='NOT_STARTED'} totalCollected={gameState.totalCollected}>
+            <ButtonsController onButtonClick={onButtonClick}/>
+            </Stats>
+            <AudioController audioPlayer={audioPlayer} />
+           
         </S.Container>
-
+        
         
         </>
     )

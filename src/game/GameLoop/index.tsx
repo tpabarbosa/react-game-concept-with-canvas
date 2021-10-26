@@ -27,13 +27,16 @@ import { startedState } from './States/startedState';
 import { victoryState } from './States/victoryState';
 import { useEvent } from '../../hooks/useEvent';
 import { useLoopAnimation } from './LoopAnimation/useLoopAnimation';
+import { ValidDirections } from '../types/Directions';
 
 type Props = {
   counterDown: any;
   audioPlayer: any;
+  userLastInput: {subtype: string, value:ValidDirections|null} | null;
+  onHandledButtonClick: () => void;
 }
 
-export const GameLoop = ({ gameState, gameStateDispatcher, counterDown, audioPlayer}: GameProps & Props) => {
+export const GameLoop = ({ onHandledButtonClick, userLastInput, gameState, gameStateDispatcher, counterDown, audioPlayer}: GameProps & Props) => {
 
     // canvas
     const {scaledWidth, scaledHeight} = mapDimensions;
@@ -68,8 +71,9 @@ export const GameLoop = ({ gameState, gameStateDispatcher, counterDown, audioPla
 
     const updateCollected = useCallback((toAdd: number) => {
       const total = toAdd ? gameState.totalCollected + toAdd : 0;
+      if (toAdd) {audioPlayer.play('coinCollected')};
       gameStateDispatcher({type: 'totalCollected', value:total });
-    },[gameStateDispatcher, gameState.totalCollected]);
+    },[gameStateDispatcher, audioPlayer, gameState.totalCollected]);
 
     //character creation 
     const char = useCharacter({name:'Tati', phase:gameState.phase.loadingPhase});
@@ -136,9 +140,17 @@ export const GameLoop = ({ gameState, gameStateDispatcher, counterDown, audioPla
     transition(state.handleState({phaseStatus}));
   },[state, phaseStatus, transition])
 
+  //buttonHandler
+  useEffect(() => {
+    if(userLastInput) {
+      transition(state.handleUserInput({input:{type:'buttonclick', subtype:userLastInput.subtype, value:userLastInput.value}},{phaseStatus}));
+      onHandledButtonClick();
+    }
+  },[state, phaseStatus, transition, userLastInput, onHandledButtonClick])
+
   //keyHandler
   const handleKeyPress = (e: KeyboardEvent) => {
-    transition(state.handleKeyPress(e,{phaseStatus}));
+    transition(state.handleUserInput({input:{type:'keypress', value:e}},{phaseStatus}));
   }
   useEvent('keyup', handleKeyPress);
 

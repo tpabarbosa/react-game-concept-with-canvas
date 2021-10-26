@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 
 export const Container = styled.div `
-    margin: 23px 23px 23px 0;
+    margin: 23px 0px 23px 0;
     padding: 10px;
     background-color: white;
     width: 150px;
     height: 100%;
+    border-radius: 10px;
 `;
 
 export const Phase = styled.div `

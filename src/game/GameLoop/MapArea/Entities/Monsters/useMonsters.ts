@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo} from 'react';
 import { GameState } from "../../../../types/GameState"
 
 import {getRandomInt} from '../../../../../helpers/randomNumbers';
@@ -30,13 +30,13 @@ export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
     const phase = useMemo(() => gameState.phase, [gameState.phase]);
     const monsters = useMemo(() => phases[phase.loadingPhase].monsters.list, [phase]);
 
-    const audio = useMemo(() => new Audio('assets/audios/monster.mp3'), []);
-    const audioChasing = useMemo(() => new Audio('assets/audios/chasing.mp3'), []);
+    //const [isCloseToChar, setIsCloseToChar] = useState(false);
+    const [changedChasingMode, setChangedChasingMode] = useState(false)
 
     //Monsters Chasing Mode
     const [isChasing, setIsChasing] = useState(true);
     const changeChasingMode = (value: boolean) =>{
-        audioChasing.play();
+        setChangedChasingMode(true);
         setIsChasing(value);
     }
 
@@ -86,6 +86,7 @@ export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
 
     const move = () => {
         const newList: MonsterType[]=[];
+        setChangedChasingMode(false);
         monstersList.forEach((monster) => {
             const index = monster.monster;
             const distances = getDistancesByDirection(monster, index);
@@ -119,15 +120,16 @@ export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
         setMonstersList(newList);
     }
 
-    useEffect(() => {
-        if(gameState.status === 'RUNNING') {
-            monstersList.forEach(monster => {
-                if (Positions.getDistance(monster.position, char.position) < 2.5) {
-                    audio.play();
-                }
-            })
-        }
-    }, [monstersList, char, audio, gameState.status])
+    const isCloseToChar = useCallback(() => {
+        let isClose = false;
+        monstersList.forEach(monster => {
+            if (Positions.getDistance(monster.position, char.position) < 2.5) {
+                isClose = true;
+            } 
+        })
+        return isClose;
+    }, [char.position, monstersList])
+
 
     const checkCollision = useCallback((charPosition: Position) => {
         monstersList.forEach(monster => {
@@ -144,6 +146,7 @@ export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
 
     const init = () => {
         setIsChasing(true);
+        setChangedChasingMode(false);
         const newList: MonsterType[]=[];
         monsters.forEach((monster) => {
             newList.push({
@@ -162,6 +165,8 @@ export const useMonsters = ({char, onMonsterWin, gameState}: Props) => {
         init,
         move,
         changeChasingMode,
-        isChasing
+        isChasing,
+        isCloseToChar,
+        changedChasingMode
     }
 }

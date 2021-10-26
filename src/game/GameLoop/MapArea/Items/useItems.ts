@@ -36,13 +36,11 @@ export const useItems = ({ updateCollected, onCollectedAll, gameState}: Props) =
     const items = useMemo(() => phases[phase.loadingPhase].items.list, [phase]);
     const char = useMemo(() => phases[phase.loadingPhase].char, [phase]);
     const monsters = useMemo(() => phases[phase.loadingPhase].monsters.list, [phase]);
-
-    const audio = useMemo(() => new Audio('assets/audios/coin.mp3'), []);
+    
 
     const onCollected = useCallback(() => {
-        audio.play();
         setCollected(collected + 1);
-    }, [collected, audio]);
+    }, [collected]);
 
     useEffect(() => {
         if(collected===totalItems && collected !== 0) {
@@ -148,6 +146,6 @@ export const useItems = ({ updateCollected, onCollectedAll, gameState}: Props) =
         itemsFrame,
         init,
         animate,
-        checkCollected
+        checkCollected,
     }
 }

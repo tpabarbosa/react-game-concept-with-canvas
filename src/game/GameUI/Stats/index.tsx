@@ -11,9 +11,10 @@ type Props = {
     mustClean: boolean;
     mustRender: boolean;
     totalCollected: number;
+    children: JSX.Element;
 }
 
-export const Stats = ({phase, lives, mustClean, mustRender, totalCollected}: Props) => {
+export const Stats = ({children, phase, lives, mustClean, mustRender, totalCollected}: Props) => {
     const livesCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const totalCollectedCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const [ctxLives, setCtxLives] = useState<CanvasRenderingContext2D| null>(null);
@@ -149,6 +150,8 @@ export const Stats = ({phase, lives, mustClean, mustRender, totalCollected}: Pro
                     />
                 </div>
             </S.Collected>
+            {children}
         </S.Container>
+        
     )
 }

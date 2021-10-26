@@ -1,9 +1,9 @@
 import { Actions } from "../../types/GameState";
-import { StateProps, StateType } from "./StateProps";
+import { StateProps, StateType, UserInputType } from "./StateProps";
 
 export const countingDownState: StateType =  () => {
 
-    const handleKeyPress = (e: KeyboardEvent, {phaseStatus}: StateProps): Actions | undefined | void => {
+    const handleUserInput = ({input}: UserInputType, phaseStatus: StateProps): Actions | undefined | void => {
 
     }
 
@@ -16,7 +16,7 @@ export const countingDownState: StateType =  () => {
     }
 
     return { 
-        handleKeyPress,
+        handleUserInput,
         handleState
     }
 }

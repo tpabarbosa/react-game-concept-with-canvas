@@ -1,9 +1,24 @@
 import { phases } from "../../constants/phases";
 import { Actions } from "../../types/GameState";
-import { StateProps } from "./StateProps";
+import { StateProps, UserInputType } from "./StateProps";
 
 export const victoryState =  () => {
     
+    const handleUserInput = ({input}: UserInputType, phaseStatus: StateProps): Actions | undefined | void => {
+        if (input.type==='keypress') {
+            return handleKeyPress(input.value, phaseStatus);
+        }
+        if (input.type==='buttonclick' && input.subtype==='changeState') {
+            return handleChangeState(phaseStatus);
+        }
+    }
+
+    const handleChangeState = ({phaseStatus}: StateProps) => {
+        phaseStatus.audioPlayer.playLoop('music');
+            phaseStatus.stopLoopTimers();
+            return 'UNPAUSE_COMMAND' as Actions;
+    }
+
     const handleKeyPress = (e: KeyboardEvent,{phaseStatus}: StateProps): Actions | undefined | void => {
 
         if (e.code === 'Enter') {
@@ -18,7 +33,7 @@ export const victoryState =  () => {
     }
 
     return { 
-        handleKeyPress,
+        handleUserInput,
         handleState
     }
 }

@@ -1,4 +1,5 @@
-import { Actions, GameState, ImagesStatus, Status } from "../../types/GameState";
+import { ValidDirections } from "../../types/Directions";
+import { Actions, ImagesStatus, Status } from "../../types/GameState";
 
 export type PhaseStatus = {
     char: any;
@@ -30,8 +31,13 @@ export type StatesType = {
     [state in Status]: StateType;
   }
 
+export type UserInputType = {
+    input: {type: 'keypress', value:KeyboardEvent} | 
+            {type:'buttonclick', subtype:string, value: ValidDirections | null} ;
+}
+
   export type StateType =  () => {
-        handleKeyPress: (e: KeyboardEvent, {phaseStatus}:StateProps) => Actions | undefined | void;
+        handleUserInput: ({input}:UserInputType , phaseStatus:StateProps) => Actions | undefined | void;
         handleState: ({phaseStatus}: StateProps) => Actions | undefined | void;
   
 }
