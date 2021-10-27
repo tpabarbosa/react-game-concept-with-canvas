@@ -53,7 +53,7 @@ export const GameUI = ({ onButtonClick, counterDown, gameState, audioPlayer }: P
                 </S.Info>
             }
             </S.MapArea>
-            <Stats phase={gameState.phase.showingPhase} lives={gameState.lives} mustClean={gameState.status==='NOT_STARTED'} mustRender={gameState.status==='NOT_STARTED'} totalCollected={gameState.totalCollected}>
+            <Stats phase={gameState.phase.showingPhase} lives={gameState.lives} mustClean={gameState.status==='NOT_STARTED'} mustRender={gameState.status==='INITIALIZED'} totalCollected={gameState.totalCollected}>
             <ButtonsController onButtonClick={onButtonClick}/>
             </Stats>
             <AudioController audioPlayer={audioPlayer} />

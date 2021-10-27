@@ -14,7 +14,9 @@ export type PhaseStatus = {
     lives: number;
     showingPhase: number;
     loadingPhase: number;
-    setIsUpdateRequired: (value: boolean) => void;
+    setIsCharUpdateRequired: (value: boolean) => void;
+    setIsMonstersUpdateRequired: (value: boolean) => void;
+    setIsItemsUpdateRequired: (value: boolean) => void;
     setHasMonsterWin: (value: boolean) => void;
     setHasCharWin: (value: boolean) => void;
     updateLives: (value: number) => void;

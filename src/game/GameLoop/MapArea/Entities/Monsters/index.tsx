@@ -1,6 +1,4 @@
-import {useEffect, useContext} from 'react';
-
-import CanvasContext from '../../../CanvasContext';
+import {useEffect} from 'react';
 
 import {MonsterType} from './useMonsters';
 import { monsters } from '../../../../constants/monstersTiles';
@@ -9,13 +7,15 @@ type Props = {
     onLoadMonsters: () => void;
     mustRender: boolean;
     activeMonsters: MonsterType[];
+    ctxMonsters: CanvasRenderingContext2D| null 
 }
 
-export const Monsters = ({onLoadMonsters, activeMonsters, mustRender}: Props) => {
-    const ctx = useContext(CanvasContext);
+export const Monsters = ({ctxMonsters, onLoadMonsters, activeMonsters, mustRender}: Props) => {
+    const ctx = ctxMonsters;
 
     useEffect(() => {
-        if (mustRender) {
+        if (mustRender && ctx && activeMonsters) {
+            ctx.clearRect(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
             activeMonsters.forEach((monster) =>{
                 let key: number | string;
                 if (monsters.list[monster.monster]?.file) {
@@ -31,7 +31,7 @@ export const Monsters = ({onLoadMonsters, activeMonsters, mustRender}: Props) =>
                 const tileSize = monsters.list[monster.monster]?.tilesize ?? monsters.common?.tilesize;
                 const scaledTileSize = monsters.list[monster.monster]?.scaledTilesize ?? monsters.common?.scaledTilesize;
 
-                if (img && ctx && direction && tileSize && scaledTileSize) {
+                if (img && direction && tileSize && scaledTileSize) {
                     ctx.drawImage(
                         img,
                         direction.x * tileSize,

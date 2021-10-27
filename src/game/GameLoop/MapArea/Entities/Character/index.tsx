@@ -1,6 +1,5 @@
-import {useEffect, useContext} from 'react';
+import {useEffect} from 'react';
 
-import CanvasConext from '../../../CanvasContext';
 import { characters } from '../../../../constants/charactersTiles';
 import { Position } from '../../../../types/Position';
 import { ValidDirections } from '../../../../types/Directions';
@@ -10,13 +9,15 @@ type Props = {
     direction: ValidDirections;
     position: Position;
     mustRender: boolean;
+    ctxCharacter: CanvasRenderingContext2D| null 
 }
 
-export const Character = ({onLoadCharacter, direction, position, mustRender}: Props) => {
-    const ctx = useContext(CanvasConext);
+export const Character = ({ctxCharacter, onLoadCharacter, direction, position, mustRender}: Props) => {
+    const ctx = ctxCharacter;
 
     useEffect(() => {
-        if (mustRender) {
+        if (ctx && mustRender) {
+            ctx.clearRect(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
             const img: HTMLImageElement | null = document.querySelector(`#char-tile-img`);
 
             const data = characters.list[1].directions ?? characters.common?.directions;
@@ -25,8 +26,7 @@ export const Character = ({onLoadCharacter, direction, position, mustRender}: Pr
             const tileSize = characters.list[1].tilesize ?? characters.common?.tilesize;
             const scaledTileSize = characters.list[1].scaledTilesize ?? characters.common?.scaledTilesize;
 
-
-            if (img && ctx && dir && characters.list[1].file && tileSize && scaledTileSize) {
+            if (img && dir && tileSize && scaledTileSize) {
                 
                 ctx.drawImage(
                     img,

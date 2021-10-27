@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { ValidDirections } from '../../types/Directions';
 import * as S from './styles';
 
@@ -18,6 +18,7 @@ export const ButtonsController = ({onButtonClick}: Props) => {
 
     return (
         <S.Container>
+            <S.DirectionsButtons>
             <div>
                 <button id='up' onClick={handleDirectionsButton}>⬆</button>
             </div>
@@ -26,9 +27,10 @@ export const ButtonsController = ({onButtonClick}: Props) => {
                 <button id='down' onClick={handleDirectionsButton}>⬇</button>
                 <button id='right' onClick={handleDirectionsButton}>➡</button>
             </div>
-            <div>
-                <button id={'stateButton'} onClick={handleGameStateButton}>Ação</button>
-            </div>
+            </S.DirectionsButtons>
+            <S.StateButtons>
+                <button id={'stateButton'} onClick={handleGameStateButton} >Ação</button>
+            </S.StateButtons>
         </S.Container>
     )
 }

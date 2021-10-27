@@ -4,7 +4,6 @@ import {itemsTiles} from '../../constants/itemsTiles';
 import { useRef, useEffect, useState } from 'react';
 import { useCounterDown } from '../../../hooks/useCounterDown';
 
-
 type Props = {
     phase: number;
     lives: number;

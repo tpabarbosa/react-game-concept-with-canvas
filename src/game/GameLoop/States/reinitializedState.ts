@@ -11,7 +11,8 @@ export const reinitializedState =  () => {
         phaseStatus.stopLoopTimers();
         phaseStatus.char.init();
         phaseStatus.monsters.init();
-        phaseStatus.setIsUpdateRequired(true);
+        phaseStatus.setIsCharUpdateRequired(true);
+        phaseStatus.setIsMonstersUpdateRequired(true);
         return 'INITIALIZED';
     }
 

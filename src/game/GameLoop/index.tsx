@@ -1,17 +1,12 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import * as S from './styles';
 
-import CanvasContext from "./CanvasContext";
-
 import { Actions, GameProps, transitions } from '../types/GameState';
-
-import { mapDimensions } from '../constants/mapDimensions'
 
 import { useCharacter } from './MapArea/Entities/Character/useCharacter';
 import { useMonsters } from './MapArea/Entities/Monsters/useMonsters';
 import { useItems } from './MapArea/Items/useItems';
 
-import { MapArea } from './MapArea';
 import { Buffering } from './Buffering';
 
 import { countingDownState } from './States/countingDownState';
@@ -28,6 +23,10 @@ import { victoryState } from './States/victoryState';
 import { useEvent } from '../../hooks/useEvent';
 import { useLoopAnimation } from './LoopAnimation/useLoopAnimation';
 import { ValidDirections } from '../types/Directions';
+import { MapRender } from './Rendering/MapRender';
+import { ItemsRender } from './Rendering/ItemsRender';
+import { CharacterRender } from './Rendering/CharacterRender';
+import { MonstersRender } from './Rendering/MonstersRender';
 
 type Props = {
   counterDown: any;
@@ -38,21 +37,9 @@ type Props = {
 
 export const GameLoop = ({ onHandledButtonClick, userLastInput, gameState, gameStateDispatcher, counterDown, audioPlayer}: GameProps & Props) => {
 
-    // canvas
-    const {scaledWidth, scaledHeight} = mapDimensions;
-    const canvasRef = useRef<HTMLCanvasElement | null>(null) ;
-    const [ctx, setCtx] = useState<CanvasRenderingContext2D| null>(null);
-
-    useEffect(() => {
-        if (canvasRef.current) {
-            setCtx(canvasRef.current.getContext('2d'));
-        }
-    }, [setCtx, canvasRef]);
-
     const onImagesBuffered = useCallback(() => {
       gameStateDispatcher({type: 'isMapVisible', value: true});
     }, [gameStateDispatcher]);
-
 
 
     //End Game
@@ -66,7 +53,9 @@ export const GameLoop = ({ onHandledButtonClick, userLastInput, gameState, gameS
     },[gameStateDispatcher]);
 
     const updatePhase = useCallback((toShow:number, toLoad: number) =>{
-      gameStateDispatcher({type: 'phase', value: {showingPhase: toShow, loadingPhase: toLoad}})
+      gameStateDispatcher({type: 'phase', value: {showingPhase: toShow, loadingPhase: toLoad}});
+      gameStateDispatcher({type: 'imagesLoaded', value:'NO_IMAGES'})
+      gameStateDispatcher({type: 'imagesBuffered', value:'MONSTERS'})
     },[gameStateDispatcher]);
 
     const updateCollected = useCallback((toAdd: number) => {
@@ -101,14 +90,16 @@ export const GameLoop = ({ onHandledButtonClick, userLastInput, gameState, gameS
       lives: gameState.lives,
       showingPhase: gameState.phase.showingPhase,
       loadingPhase: gameState.phase.loadingPhase,
-      setIsUpdateRequired: loopAnimation.setIsUpdateRequired,
+      setIsCharUpdateRequired: loopAnimation.setIsCharUpdateRequired,
+      setIsMonstersUpdateRequired: loopAnimation.setIsMonstersUpdateRequired,
+      setIsItemsUpdateRequired: loopAnimation.setIsItemsUpdateRequired,
       setHasMonsterWin,
       setHasCharWin,
       updateLives,
       updatePhase,
       updateCollected,
       stopLoopTimers: loopAnimation.stopLoopTimers,
-    }},[char, items, monsters, hasMonsterWin, hasCharWin, audioPlayer, counterDown, gameState, loopAnimation.stopLoopTimers, updateLives, updatePhase, updateCollected, loopAnimation.setIsUpdateRequired]);
+    }},[char, items, monsters, hasMonsterWin, hasCharWin, audioPlayer, counterDown, gameState, loopAnimation.stopLoopTimers, updateLives, updatePhase, updateCollected, loopAnimation.setIsCharUpdateRequired,loopAnimation.setIsMonstersUpdateRequired,loopAnimation.setIsItemsUpdateRequired]);
 
   //States
   const states:StatesType   = useMemo(()=> {return {
@@ -156,21 +147,20 @@ export const GameLoop = ({ onHandledButtonClick, userLastInput, gameState, gameS
 
     // Screen
     return (
-        <CanvasContext.Provider value={ctx}>
             <S.Container>
-            
-            <canvas
-                ref={canvasRef}
-                width={scaledWidth}
-                height={scaledHeight}
-            />
-
             <Buffering gameState={gameState} gameStateDispatcher={gameStateDispatcher} onImagesBuffered={onImagesBuffered}/>
 
-            {gameState.isMapVisible && gameState.imagesBuffered==='ALL_IMAGES' &&
-                <MapArea gameState={gameState} gameStateDispatcher={gameStateDispatcher} char={{direction: char.direction, pos: char.position}} activeMonsters={monsters.monsters} items={items.items} itemsFrame={items.itemsFrame} />
+            {gameState.imagesBuffered==='ALL_IMAGES' &&
+            <>
+              <MapRender gameState={gameState} gameStateDispatcher={gameStateDispatcher} />
+              
+              <ItemsRender gameState={gameState} gameStateDispatcher={gameStateDispatcher} items={items.items} itemsFrame={items.itemsFrame} mustRender={loopAnimation.isItemsUpdateRequired}/>
+
+              <CharacterRender gameState={gameState} gameStateDispatcher={gameStateDispatcher} position={char.position} direction={char.direction} mustRender={loopAnimation.isCharUpdateRequired}/>
+
+              <MonstersRender gameState={gameState} gameStateDispatcher={gameStateDispatcher} activeMonsters={monsters.monsters} mustRender={loopAnimation.isMonstersUpdateRequired}/>
+            </>
             }
             </S.Container>
-        </CanvasContext.Provider>
     )
 }

@@ -8,14 +8,16 @@ export const notStartedState =  () => {
     }
 
     const handleState = ({phaseStatus}: StateProps): Actions | undefined | void => {
-        if (phaseStatus.imagesLoaded==='ALL_IMAGES' || 
-        phaseStatus.imagesLoaded==='MONSTERS') {
+        if (phaseStatus.imagesLoaded==='NO_IMAGES' || 
+        phaseStatus.imagesLoaded==='MAP') {
             phaseStatus.stopLoopTimers();
             phaseStatus.items.init();
             phaseStatus.char.init();
             phaseStatus.monsters.init();
+            phaseStatus.setIsCharUpdateRequired(true);
+            phaseStatus.setIsMonstersUpdateRequired(true);
+            phaseStatus.setIsItemsUpdateRequired(true);
             phaseStatus.audioPlayer.stop('music');
-            phaseStatus.setIsUpdateRequired(true);
             return 'IMAGES_LOADED';
         };
     }

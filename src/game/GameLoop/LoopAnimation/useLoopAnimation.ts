@@ -9,7 +9,9 @@ type Props = {
 }
 
 export const useLoopAnimation = ({gameStateDispatcher, gameState, char, items, monsters}: GameProps & Props) => {
-    const [isUpdateRequired, setIsUpdateRequired] = useState(false);
+    const [isCharUpdateRequired, setIsCharUpdateRequired] = useState(false);
+    const [isMonstersUpdateRequired, setIsMonstersUpdateRequired] = useState(false);
+    const [isItemsUpdateRequired, setIsItemsUpdateRequired] = useState(false);
     const loopRef = useRef<number>();
 
     const lastTimeChar = useRef<number>();
@@ -25,58 +27,63 @@ export const useLoopAnimation = ({gameStateDispatcher, gameState, char, items, m
     }, [lastTimeMonsters, lastTimeChar, lastTimeItems, lastTimeMonstersChase])
 
     const tick = useCallback((time) => {
-        setIsUpdateRequired(false);
+        
         if(gameState.status === 'RUNNING') {
             if(!lastTimeChar.current || time > lastTimeChar.current + phases[gameState.phase.loadingPhase].char.refreshTime) {
-                lastTimeChar.current = time;
+                lastTimeChar.current = time ;
                 char.move();
                 items.checkCollected(char.position);
-                setIsUpdateRequired(true);
+                setIsCharUpdateRequired(true);
             }
           //monsters animation
             if(!lastTimeMonsters.current || time > lastTimeMonsters.current + phases[gameState.phase.loadingPhase].monsters.refreshTime) {
                 lastTimeMonsters.current = time;
                 monsters.move();
-                setIsUpdateRequired(true);
+                setIsMonstersUpdateRequired(true);
             }
           //chasing animation
             if(!lastTimeMonstersChase.current || (time > lastTimeMonstersChase.current + phases[gameState.phase.loadingPhase].monsters.retreatTime && !monsters.isChasing)) {
                 lastTimeMonstersChase.current = time;
                 monsters.changeChasingMode(true);
-                setIsUpdateRequired(true);
             }
             if(!lastTimeMonstersChase.current || (time > lastTimeMonstersChase.current + phases[gameState.phase.loadingPhase].monsters.chasingTime && monsters.isChasing)) {
                 lastTimeMonstersChase.current = time;
                 monsters.changeChasingMode(false);
-                setIsUpdateRequired(true);
             }
           //items animation
             if(!lastTimeItems.current || time > lastTimeItems.current + phases[gameState.phase.loadingPhase].items.refreshTime){
                 lastTimeItems.current = time;
                 items.animate();
-                setIsUpdateRequired(true);
+                setIsItemsUpdateRequired(true);
             }
         }
+
+        setIsCharUpdateRequired(false);
+        setIsMonstersUpdateRequired(false);
+        setIsItemsUpdateRequired(false);
                     
-        if (isUpdateRequired) {
-            gameStateDispatcher({type: 'isMapVisible', value:false});
-            gameStateDispatcher({type: 'isMapVisible', value:true});   
-            setIsUpdateRequired(false);
-        } 
         if(gameState.status === 'RUNNING') {
             loopRef.current = requestAnimationFrame(tick);  
         }
-    }, [isUpdateRequired, gameStateDispatcher,  gameState.status, items, char, monsters, gameState.phase]);
+
+    }, [gameState.status, items, char, monsters, gameState.phase]);
 
     useEffect(() => {   
-        loopRef.current = requestAnimationFrame(tick);
+        if(gameState.status === 'RUNNING'){
+            loopRef.current = requestAnimationFrame(tick);
+        }
         return () => {
             loopRef.current && cancelAnimationFrame(loopRef.current);
         }
-    }, [loopRef, tick]);
+    }, [loopRef, tick, gameState.status]);
   
     return {
-        setIsUpdateRequired,
+        setIsCharUpdateRequired,
+        setIsMonstersUpdateRequired,
+        setIsItemsUpdateRequired,
+        isCharUpdateRequired,
+        isMonstersUpdateRequired,
+        isItemsUpdateRequired,
         stopLoopTimers
     }
 

@@ -1,6 +1,5 @@
-import {useEffect, useContext} from 'react';
+import {useEffect} from 'react';
 
-import CanvasConext from '../../CanvasContext';
 import { ItemType } from './useItems';
 import { itemsTiles } from '../../../constants/itemsTiles';
 
@@ -10,13 +9,15 @@ type Props = {
     items: ItemType[];
     frame: number[];
     mustRender: boolean;
+    ctxItems: CanvasRenderingContext2D| null 
 }
 
-export const Items = ({onLoadItems, items, frame, mustRender}: Props) => {
-    const ctx = useContext(CanvasConext);
+export const Items = ({ctxItems, onLoadItems, items, frame, mustRender}: Props) => {
+    const ctx = ctxItems;
 
     useEffect(() => {
-        if ((mustRender ) ) {
+        if ((ctx && mustRender && items ) ) {
+            ctx.clearRect(0,0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
             items.forEach(item => { 
                 let key: number | string;
                 if (itemsTiles.list[item.type].file) {
@@ -32,7 +33,7 @@ export const Items = ({onLoadItems, items, frame, mustRender}: Props) => {
 
                 let framePos = frames ? frames[frame[0]]:undefined;
 
-                if (ctx && img && tileSize && scaledTileSize && framePos && !item.wasCollected) {
+                if (img && tileSize && scaledTileSize && framePos && !item.wasCollected) {
                     ctx.drawImage(
                         img,
                         framePos.x * tileSize,

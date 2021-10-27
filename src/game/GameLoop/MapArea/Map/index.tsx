@@ -1,5 +1,4 @@
-import { useContext, useEffect } from "react";
-import CanvasContext from "../../CanvasContext";
+import { useEffect } from "react";
 
 import { mapDimensions } from "../../../constants/mapDimensions";
 import { mapBackgrounds } from "../../../constants/mapBackgrounds";
@@ -11,13 +10,14 @@ type Props = {
     mustRender: boolean;
     background: number;
     objects: number;
+    ctxMap: CanvasRenderingContext2D| null 
 }
 
-export const Map = ({onLoadMap, mustRender, background, objects}: Props) => {
-    const ctx = useContext(CanvasContext);
+export const Map = ({ctxMap, onLoadMap, mustRender, background, objects}: Props) => {
+    const ctx = ctxMap;
 
     useEffect(() => {
-        if (mustRender) {
+        if (mustRender && ctx) {
             const {cols, rows, tilesize, scaledTilesize} = mapDimensions;
             const drawLayer = (grid: any) => {
                 
@@ -29,7 +29,7 @@ export const Map = ({onLoadMap, mustRender, background, objects}: Props) => {
                         }                
                         const img: HTMLImageElement | null = document.querySelector(`#map-tile-img-${item}`);
                         
-                        if (ctx && img) {
+                        if (img) {
                             ctx.drawImage(img, 
                                 0, 
                                 0, 

@@ -40,10 +40,10 @@ export const phases: PhaseType= {
             //char: 1,
             initialPosition: {x: 7, y: 8},
             initialDirection: 'down',
-            refreshTime: 280,
+            refreshTime: 260,
         },
         monsters: { 
-            refreshTime: 380,
+            refreshTime: 390,
             chasingTime: 12000,
             retreatTime: 5000,
             list: [
@@ -55,7 +55,7 @@ export const phases: PhaseType= {
             ],
         },
         items: {
-            refreshTime: 125,
+            refreshTime: 130,
             list: [
                 {
                     item: 1,
@@ -75,10 +75,10 @@ export const phases: PhaseType= {
             //char: 1,
             initialPosition: {x: 7, y: 8},
             initialDirection: 'down',
-            refreshTime: 280,
+            refreshTime: 260,
         },
         monsters: { 
-            refreshTime: 380,
+            refreshTime: 390,
             chasingTime: 12000,
             retreatTime: 5000,
             list: [
@@ -95,7 +95,7 @@ export const phases: PhaseType= {
             ],
         },
         items: {
-            refreshTime: 125,
+            refreshTime: 130,
             list: [
                 {
                     item: 1,
