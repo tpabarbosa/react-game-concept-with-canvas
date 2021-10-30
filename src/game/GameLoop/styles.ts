@@ -7,6 +7,6 @@ export const Container = styled.div`
         position: absolute;
         margin: 10px;
         padding: 20px;
-        border-radius: 20px;
+        border-radius: 24px;
     }
 `

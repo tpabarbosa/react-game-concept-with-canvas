@@ -1,22 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import { mapDimensions } from "../../../constants/mapDimensions";
-import { phases } from "../../../constants/phases";
-import { GameProps } from "../../../types/GameState";
-import { Map } from '../../MapArea/Map';
+import { mapDimensions } from "../../../GameData/mapDimensionsData";
+import { levels } from "../../../GameData/levelsData";
+import { GameState } from "../../../GameStates/GameState";
+import { Map } from './Map';
 
+type Props = {
+    gameState: GameState;
+    level:number;
+}
 
-export const MapRender = ({gameState, gameStateDispatcher}: GameProps) => {
+export const MapRender = ({gameState, level}: Props) => {
     const canvasMapRef = useRef<HTMLCanvasElement | null>(null) ;
     const [ctxMap, setCtxMap] = useState<CanvasRenderingContext2D| null>(null);
     const {scaledWidth, scaledHeight} = mapDimensions;
-    const [mustRenderMap, setMustRenderMap] = useState(true);
+    const [mustUpdateMap, setMustUpdateMap] = useState(true);
 
     const onLoadMap = (value: boolean = true) => {
         if (value) {
-            gameStateDispatcher({type: 'imagesLoaded', value: 'MAP'});
-            setMustRenderMap(false);
+            gameState.updateLoadedImages('MAP');
+            setMustUpdateMap(false);
         }
     }
+
+    useEffect(() => {
+        if(gameState.images==='NO_IMAGES') {
+            setMustUpdateMap(true);
+        }
+    },[gameState.images])
 
     useEffect(() => {
         if (canvasMapRef.current) {
@@ -32,16 +42,15 @@ export const MapRender = ({gameState, gameStateDispatcher}: GameProps) => {
                 width={scaledWidth}
                 height={scaledHeight}
             />
-
-            {gameState.imagesLoaded ==='NO_IMAGES' &&
+            {mustUpdateMap &&
                 <Map 
                     ctxMap={ctxMap}
                     onLoadMap={onLoadMap} 
-                    mustRender={mustRenderMap}
-                    background={phases[gameState.phase.loadingPhase].background}
-                    objects={phases[gameState.phase.loadingPhase].objects}
-                />   
-            } 
+                    mustRender={mustUpdateMap}
+                    background={levels[level].background}
+                    objects={levels[level].objects}
+                /> 
+            }  
         </div>
     )
 }

@@ -1,49 +1,41 @@
-import { useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import * as S from './styles';
-import { GameState, GameStateActions } from './types/GameState';
 import { GameUI } from './GameUI';
 import { GameLoop } from './GameLoop';
-import { useCounterDown } from '../hooks/useCounterDown';
-import { useAudioPlayer } from './GameLoop/AudioPlayer/useAudioPlayer';
-import { ValidDirections } from './types/Directions';
+import { ValidDirections } from './helpers/PositionAndDirection/DirectionsType';
+import { AppActions, AppState, AppStateProperties, appStatusTransitions } from './AppState';
+import { ImagesBuffering } from './ImagesBuffering';
+import { useGameState } from './GameStates/useGameState';
+import { useLevelState } from './GameStates/useLevelState';
 
 const App = () => {
-  const initialGameStatus: GameState = {
-    lives: 3,
-    phase: {showingPhase: 1, loadingPhase: 1},
-    imagesBuffered: 'NO_IMAGES',
-    imagesLoaded: 'NO_IMAGES',
-    status: 'NOT_STARTED',
-    isMapVisible: false,
-    totalCollected: 0,
-  };
-
-  const gameStateReducer = (state: GameState, action: GameStateActions) => {
-    switch (action.type) {
-      case 'status':
-        return {...state, status: action.value};
-      case 'phase':
-        return {...state, phase: action.value};
-      case 'lives':
-        return {...state, lives: action.value};
-      case 'totalCollected':
-        return {...state, totalCollected: action.value};
-      case 'imagesBuffered':
-        return {...state, imagesBuffered: action.value};
-      case 'imagesLoaded':
-        return {...state, imagesLoaded: action.value};
-      case 'isMapVisible':
-        return {...state, isMapVisible: action.value};
-      default:
-        return state;
-    } 
+  const initialAppState: AppState = {
+    status: 'APP_STARTED',
   }
 
-  const counterDown = useCounterDown({initial: 3});
   
-  const audioPlayer = useAudioPlayer();
 
-  const [gameState, dispatchGameState] = useReducer(gameStateReducer, initialGameStatus);
+  const appStateReducer = (state: AppState, property: AppStateProperties) => {
+    switch (property.prop) {
+      case 'status':
+        return {...state, status: property.value};
+      default:
+        return state;
+    }
+  }
+
+  const [appState, updateAppState] = useReducer(appStateReducer, initialAppState);
+
+  const appTransition = useCallback((action: AppActions | void) => {
+    const newStatus = action ? appStatusTransitions[appState.status][action]: undefined;
+    if (newStatus) {
+      updateAppState({prop: 'status', value: newStatus});
+    }
+  },[appState.status])
+
+  
+  const levelState = useLevelState();
+  const gameState = useGameState();
 
   const [userLastInput, setUserLastInput] = useState<{subtype: string, value:ValidDirections|null}|null>(null);
 
@@ -54,21 +46,46 @@ const App = () => {
   const onHandledButtonClick = () => {
     setUserLastInput(null);
   } 
+
+  const handleGameStartCommand = () => {
+    appTransition('NEW_GAME_COMMAND');
+    //gameState.setChar(1, 'Player Name');
+    gameState.transition('NEW_GAME_COMMAND');
+    //levelState.transition('NEW_LEVEL_COMMAND');
+  }
   
+  useEffect(() => {
+    if(appState.status==='APP_IDLE') {
+      appTransition('NEW_GAME_COMMAND');
+      gameState.transition('NEW_GAME_COMMAND');
+    }
+  }, [appState.status, gameState, appTransition])
+
   return (
     <S.Container>
-      <GameUI 
-        onButtonClick={handleButtonClick}
-        gameState={gameState} 
-        counterDown={counterDown}
-        audioPlayer={audioPlayer} />
-      <GameLoop 
-        userLastInput={userLastInput}
-        onHandledButtonClick={onHandledButtonClick}
-        gameState={gameState} 
-        gameStateDispatcher={dispatchGameState}
-        counterDown={counterDown}
-        audioPlayer={audioPlayer}/>
+
+        <ImagesBuffering appTransition={appTransition}/>
+
+
+      {appState.status==='APP_IDLE' &&
+        <button onClick={handleGameStartCommand}> Iniciar Jogo</button>
+      }
+
+      {appState.status==='GAME_STARTED' &&
+        <>
+          <GameUI 
+            onButtonClick={handleButtonClick}
+            gameState={gameState} 
+            levelState={levelState}
+          />
+          <GameLoop 
+            userLastInput={userLastInput}
+            onButtonClick={onHandledButtonClick}
+            gameState={gameState} 
+            levelState={levelState}
+          />
+        </>
+      }
     </S.Container>
   );
 }

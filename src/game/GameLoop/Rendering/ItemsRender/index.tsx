@@ -1,33 +1,36 @@
 import { useEffect, useRef, useState } from "react";
-import { mapDimensions } from "../../../constants/mapDimensions";
-import { GameProps } from "../../../types/GameState";
-import { ItemType } from "../../MapArea/Items/useItems";
-import { Items } from '../../MapArea/Items';
+import { mapDimensions } from "../../../GameData/mapDimensionsData";
+import { GameState } from "../../../GameStates/GameState";
+import { ItemType } from "../../../GameEntities/useItems";
+import { Items } from './Items';
+
 
 type Props = {
     items: ItemType[];
     itemsFrame: number[];
+    tileData: any[];
     mustRender: boolean;
+    gameState: GameState;
 }
 
-export const ItemsRender = ({mustRender, gameState, gameStateDispatcher, items, itemsFrame}: GameProps & Props) => {
+export const ItemsRender = ({tileData, mustRender, gameState, items, itemsFrame}: Props) => {
     const canvasItemsRef = useRef<HTMLCanvasElement | null>(null) ;
     const [ctxItems, setCtxItems] = useState<CanvasRenderingContext2D| null>(null);
     const {scaledWidth, scaledHeight} = mapDimensions;
-    const [mustRenderItems, setMustRenderItems] = useState(false);
+    const [mustUpdateItems, setMustUpdateItems] = useState(false);
 
     const onLoadItems = (value: boolean = true) => {
         if (value) {
-            gameStateDispatcher({type: 'imagesLoaded', value: 'ITEMS'});
-            setMustRenderItems(false);
+            gameState.updateLoadedImages('ITEMS');
+            setMustUpdateItems(false);
         }
     }
 
     useEffect(() => {
-        if(mustRender) {
-            setMustRenderItems(true);
+        if(mustRender || gameState.images === 'MAP') {
+            setMustUpdateItems(true);
         }
-    },[mustRender])
+    },[mustRender, gameState.images])
 
     useEffect(() => {
         if (canvasItemsRef.current) {
@@ -44,13 +47,14 @@ export const ItemsRender = ({mustRender, gameState, gameStateDispatcher, items, 
                 height={scaledHeight}
             />
 
-            {(gameState.imagesLoaded==='MAP' || mustRender)&&
+            {mustUpdateItems &&
             <Items 
                 ctxItems={ctxItems}
                 items={items} 
                 onLoadItems={onLoadItems}
                 frame={itemsFrame}  
-                mustRender={mustRenderItems}
+                tileData={tileData}
+                mustRender={mustUpdateItems}
             />
         }
 

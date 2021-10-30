@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {mapDimensions} from '../constants/mapDimensions';
+import {mapDimensions} from '../GameData/mapDimensionsData';
 
 type Props = {
     color: string;
@@ -13,6 +13,8 @@ export const Container = styled.div `
     position: absolute;
     border: 5px solid #768776;
     border-radius: 25px;
+        
+    height: ${scaledHeight+105}px;
     box-shadow: inset 0 0 4px #bfc1bf, 0 0 4px #45eb45;
 `;
 
@@ -45,9 +47,9 @@ z-index: 2;
 export const Info = styled.h1(({color}: Props) => (
     `
     z-index: 3;
-    top:0;//30px;
-    width: 60%;//280px;
-    left: 0;//60px;
+    top:0;
+    width: 60%;
+    left: 0;
     padding: 20px 40px;
     opacity: 0.6;
     text-align: center;

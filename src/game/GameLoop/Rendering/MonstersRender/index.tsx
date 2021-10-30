@@ -1,32 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import { mapDimensions } from "../../../constants/mapDimensions";
-import { GameProps } from "../../../types/GameState";
-import { Monsters } from "../../MapArea/Entities/Monsters";
-import { MonsterType } from "../../MapArea/Entities/Monsters/useMonsters";
+import { mapDimensions } from "../../../GameData/mapDimensionsData";
+import { GameState } from "../../../GameStates/GameState";
+import { Monsters } from "./Monsters";
+import { MonsterType } from "../../../GameEntities/useMonsters";
 
 type Props = {
-    activeMonsters: MonsterType[];
+    monsters: MonsterType[];
     mustRender: boolean;
+    gameState: GameState;
 }
 
-export const MonstersRender = ({mustRender, gameState, gameStateDispatcher, activeMonsters}: GameProps & Props) => {
+export const MonstersRender = ({mustRender, gameState, monsters}: Props) => {
     const canvasMonstersRef = useRef<HTMLCanvasElement | null>(null) ;
     const [ctxMonsters, setCtxMonsters] = useState<CanvasRenderingContext2D| null>(null);
     const {scaledWidth, scaledHeight} = mapDimensions;
-    const [mustRenderMonsters, setMustRenderMonsters] = useState(mustRender);
+    const [mustUpdateMonsters, setMustUpdateMonsters] = useState(false);
 
     const onLoadMonsters = (value: boolean = true) => {
         if (value) {
-            gameStateDispatcher({type: 'imagesLoaded', value: 'MONSTERS'});
-            setMustRenderMonsters(false);
+            gameState.updateLoadedImages('MONSTERS');
+            setMustUpdateMonsters(false);
         }
     }
 
     useEffect(() => {
-        if(mustRender) {
-            setMustRenderMonsters(true);
+        if(mustRender || gameState.images === 'CHARACTER') {
+            setMustUpdateMonsters(true);
         }
-    },[mustRender])
+    },[mustRender, gameState.images])
 
     useEffect(() => {
         if (canvasMonstersRef.current) {
@@ -43,12 +44,12 @@ export const MonstersRender = ({mustRender, gameState, gameStateDispatcher, acti
                 height={scaledHeight}
             />
 
-            {(gameState.imagesLoaded==='CHARACTER' || mustRender) &&
+            {mustUpdateMonsters &&
             <Monsters 
                 ctxMonsters={ctxMonsters}
-                activeMonsters={activeMonsters}
+                monsters={monsters}
                 onLoadMonsters={onLoadMonsters}
-                mustRender={mustRenderMonsters}
+                mustRender={mustUpdateMonsters}
             />
         }
 

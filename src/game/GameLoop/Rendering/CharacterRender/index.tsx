@@ -1,34 +1,35 @@
 import { useEffect, useRef, useState } from "react";
-import { mapDimensions } from "../../../constants/mapDimensions";
-import { GameProps } from "../../../types/GameState";
-import { ValidDirections } from "../../../types/Directions";
-import { Position } from "../../../types/Position";
-import { Character } from "../../MapArea/Entities/Character";
+import { mapDimensions } from "../../../GameData/mapDimensionsData";
+import { GameState } from "../../../GameStates/GameState";
+import { ValidDirections } from "../../../helpers/PositionAndDirection/DirectionsType";
+import { Position } from "../../../helpers/PositionAndDirection/PositionTypes";
+import { Character } from "./Character";
 
 type Props = {
     direction: ValidDirections;
     position: Position;
     mustRender: boolean;
+    gameState: GameState;
 }
 
-export const CharacterRender = ({mustRender, gameState, gameStateDispatcher, direction, position}: GameProps & Props) => {
+export const CharacterRender = ({mustRender, gameState, direction, position}: Props) => {
     const canvasCharacterRef = useRef<HTMLCanvasElement | null>(null) ;
     const [ctxCharacter, setCtxCharacter] = useState<CanvasRenderingContext2D| null>(null);
     const {scaledWidth, scaledHeight} = mapDimensions;
-    const [mustRenderCharacter, setMustRenderCharacter] = useState(false);
+    const [mustUpdateCharacter, setMustUpdateCharacter] = useState(false);
 
     const onLoadCharacter = (value: boolean = true) => {
         if (value) {
-            gameStateDispatcher({type: 'imagesLoaded', value: 'CHARACTER'});
-            setMustRenderCharacter(false);
+            gameState.updateLoadedImages('CHARACTER');
+            setMustUpdateCharacter(false);
         }
     }
 
     useEffect(() => {
-        if(mustRender) {
-            setMustRenderCharacter(true);
+        if(mustRender || gameState.images === 'ITEMS') {
+            setMustUpdateCharacter(true);
         }
-    },[mustRender])
+    },[mustRender, gameState.images])
 
     useEffect(() => {
         if (canvasCharacterRef.current) {
@@ -45,13 +46,13 @@ export const CharacterRender = ({mustRender, gameState, gameStateDispatcher, dir
                 height={scaledHeight}
             />
 
-            {(gameState.imagesLoaded==='ITEMS' || mustRender) &&
+            {(mustUpdateCharacter) &&
             <Character 
                 ctxCharacter={ctxCharacter}
                 direction={direction} 
                 position={position} 
                 onLoadCharacter={onLoadCharacter}
-                mustRender={mustRenderCharacter}
+                mustRender={mustUpdateCharacter}
             />
             }
 
