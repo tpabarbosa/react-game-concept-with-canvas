@@ -1,6 +1,6 @@
 import { ValidDirections } from "../../helpers/PositionAndDirection/DirectionsType";
-import { GameState } from "../../GameStates/GameState";
-import { LevelState } from "../../GameStates/LevelState";
+import { GameState } from "../../AppStates/GameState";
+import { LevelState } from "../../AppStates/LevelState";
 import { LevelStateFuncType, UserInputType } from "./LevelStateFunction";
 
 export const runningState  =  (): LevelStateFuncType => {
@@ -24,8 +24,7 @@ export const runningState  =  (): LevelStateFuncType => {
     }
 
     const onKeyPress = (e: KeyboardEvent, levelState:LevelState, gameState:GameState) => {
-        e.preventDefault();
-        if (e.code === 'Enter') {
+        if (e.code === 'Enter' || e.code==='Escape' || e.code==='NumpadEnter') {
             levelState.transition('PAUSE_COMMAND');
         }
         let direction: ValidDirections|undefined =undefined;

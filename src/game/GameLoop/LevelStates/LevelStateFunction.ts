@@ -1,6 +1,6 @@
 import { ValidDirections } from "../../helpers/PositionAndDirection/DirectionsType";
-import { GameState } from "../../GameStates/GameState";
-import { LevelState, LevelStatus } from "../../GameStates/LevelState";
+import { GameState } from "../../AppStates/GameState";
+import { LevelState, LevelStatus } from "../../AppStates/LevelState";
 
 export type LevelStatesType = {
     [state in LevelStatus]:() =>  LevelStateFuncType;

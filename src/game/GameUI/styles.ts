@@ -8,26 +8,25 @@ type Props = {
 const {scaledWidth, scaledHeight} = mapDimensions;
 
 export const Container = styled.div `
-    background-color: #1c1c1e;
     display:flex;
     position: absolute;
     border: 5px solid #768776;
     border-radius: 25px;
-        
+    z-index:2;   
     height: ${scaledHeight+105}px;
     box-shadow: inset 0 0 4px #bfc1bf, 0 0 4px #45eb45;
+    overflow: hidden;
 `;
 
 export const MapArea = styled.div`
-    
     display:flex;
     justify-content: center;
     align-items: center;
     width: ${scaledWidth}px;
     height: ${scaledHeight}px;
     text-align: center;
-    margin: 5px;
-    padding: 20px;
+    margin: 0px;
+    padding: 0px;
 `;
 
 

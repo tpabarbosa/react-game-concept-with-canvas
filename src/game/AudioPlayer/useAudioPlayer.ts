@@ -3,7 +3,8 @@ import { useMemo } from "react";
 type Audios = 'music' | 'victory' | 'defeated' | 'clockTicking' | 'coinCollected' | 'monster' | 'chasing';
 type ConversionType = {
     [audio in Audios]: HTMLAudioElement
-}
+};
+
 
 export type AudioPlayerType = {
     play: (audio: Audios) => void,
@@ -14,7 +15,7 @@ export type AudioPlayerType = {
 }
 
 export const useAudioPlayer = (): AudioPlayerType => {
-
+    
     const music = useMemo(() => new Audio('assets/audios/music.mp3'), []);
     const victory = useMemo(() => new Audio('assets/audios/victory.mp3'), []);
     const defeated = useMemo(() => new Audio('assets/audios/defeated.mp3'), []);
@@ -32,6 +33,7 @@ export const useAudioPlayer = (): AudioPlayerType => {
         'monster': monster,
         'chasing': chasing
     }
+
 
     const play = (audio: Audios) => {
         conversion[audio].play();

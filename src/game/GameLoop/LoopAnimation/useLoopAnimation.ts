@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { levels } from "../../GameData/levelsData";
-import { LevelState } from "../../GameStates/LevelState";
+import { LevelState } from "../../AppStates/LevelState";
 
 export type LoopAnimationType = void;
 

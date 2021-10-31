@@ -5,20 +5,20 @@ import { useRef, useEffect, useState } from 'react';
 import { useCounterDown } from '../../helpers/Counter/useCounterDown';
 
 type Props = {
-    phase: number;
+    level: number;
     lives: number;
     mustClean: boolean;
     mustRender: boolean;
     totalCollected: number;
 }
 
-export const GameStats = ({phase, lives, mustClean, mustRender, totalCollected}: Props) => {
+export const GameStats = ({level, lives, mustClean, mustRender, totalCollected}: Props) => {
     const livesCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const totalCollectedCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const [ctxLives, setCtxLives] = useState<CanvasRenderingContext2D| null>(null);
     const [ctxTotalCollected, setCtxTotalCollected] = useState<CanvasRenderingContext2D| null>(null);
     const livesSize = useRef(20);
-    const collectedSize = useRef(25);
+    const collectedSize = useRef(18);
     const lastTotalCollected = useRef(totalCollected);
     const [mustAnimateTotal, setMustAnimateTotal] = useState(false);
 
@@ -52,7 +52,7 @@ export const GameStats = ({phase, lives, mustClean, mustRender, totalCollected}:
             ctxLives.clearRect(0,0, 3*livesSize.current + 6, 3*livesSize.current);
         }
         if (!mustAnimateTotal && ctxTotalCollected) {
-            ctxTotalCollected.clearRect(livesSize.current,0, 2*livesSize.current, livesSize.current);
+            ctxTotalCollected.clearRect(0,0, 0.5*collectedSize.current, collectedSize.current);
         }
 
     }, [ctxLives, mustClean, ctxTotalCollected, mustAnimateTotal]);
@@ -60,6 +60,7 @@ export const GameStats = ({phase, lives, mustClean, mustRender, totalCollected}:
     useEffect(() => {
         const img: HTMLImageElement | null = document.querySelector(`#char-tile-img`);
         const tilesize = charactersTiles.list[1].tilesize ?? charactersTiles.common?.tilesize;
+        console.log(tilesize)
         if (img && ctxLives && tilesize && mustRender) {
             for(let i = 0; i <3; i++) {
                 ctxLives.drawImage(
@@ -82,27 +83,29 @@ export const GameStats = ({phase, lives, mustClean, mustRender, totalCollected}:
         const img: HTMLImageElement | null = document.querySelector(`#items-tile-img-1`);
         const tilesize = itemsTiles.list[1].tilesize ?? itemsTiles.common?.tilesize;
         if (img && ctxTotalCollected && tilesize && mustAnimateTotal) {
+                
+                ctxTotalCollected.lineWidth = 2;
+                ctxTotalCollected.strokeStyle = 'gold';    
+                ctxTotalCollected.beginPath();
+                ctxTotalCollected.moveTo(0.25*collectedSize.current, 0*collectedSize.current);
+                ctxTotalCollected.lineTo(0.25*collectedSize.current, 0.5*collectedSize.current);
+                ctxTotalCollected.stroke();
+                ctxTotalCollected.beginPath();
+                ctxTotalCollected.moveTo(0.0*collectedSize.current, 0.25*collectedSize.current);
+                ctxTotalCollected.lineTo(0.5*collectedSize.current, 0.25*collectedSize.current);
+                ctxTotalCollected.stroke();
+
                 ctxTotalCollected.drawImage(
                     img,
                     4*tilesize,
                     0,
                     tilesize,
                     tilesize,
-                    0,
+                    0.5*collectedSize.current,
                     0,
                     collectedSize.current,
                     collectedSize.current,
                 );
-                ctxTotalCollected.lineWidth = 2;
-                ctxTotalCollected.strokeStyle = 'gold';    
-                ctxTotalCollected.beginPath();
-                ctxTotalCollected.moveTo(1.25*collectedSize.current, 0*collectedSize.current);
-                ctxTotalCollected.lineTo(1.25*collectedSize.current, 0.5*collectedSize.current);
-                ctxTotalCollected.stroke();
-                ctxTotalCollected.beginPath();
-                ctxTotalCollected.moveTo(1.0*collectedSize.current, 0.25*collectedSize.current);
-                ctxTotalCollected.lineTo(1.5*collectedSize.current, 0.25*collectedSize.current);
-                ctxTotalCollected.stroke();
         }
     }, [ctxTotalCollected, mustAnimateTotal]);
 
@@ -125,28 +128,27 @@ export const GameStats = ({phase, lives, mustClean, mustRender, totalCollected}:
 
     return (
         <S.Container>
-            <S.Phase>
-                <div>Fase</div>
-                {phase}
-            </S.Phase>
+            <S.Level>
+                <div>Nível: {level}</div>
+            </S.Level>
             <S.Lives>
-                <div>Vidas</div>
+            <div>
                 <canvas
                     ref={livesCanvasRef}
                     width={`${3*livesSize.current + 6}px`}
                     height={`${livesSize.current}px`}
                 />
+            </div>
             </S.Lives>
             <S.Collected>
-                <div>Pontos</div>
                 <div>
-                    {totalCollected}
                     <canvas
                         ref={totalCollectedCanvasRef}
-                        width={`${2*collectedSize.current}px`}
+                        width={`${1.5*collectedSize.current}px`}
                         height={`${collectedSize.current}px`}
                     />
                 </div>
+                <div>{totalCollected}</div>
             </S.Collected>
         </S.Container>
         

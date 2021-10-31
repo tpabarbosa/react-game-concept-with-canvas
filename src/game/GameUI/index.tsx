@@ -1,10 +1,10 @@
 import * as S from './styles';
-import { GameState } from '../GameStates/GameState';
+import { GameState } from '../AppStates/GameState';
 import { GameStats } from './GameStats';
 import { AudioButton } from './AudioButton';
 import { GameButtons} from './GameButtons';
 import { ValidDirections } from '../helpers/PositionAndDirection/DirectionsType';
-import { LevelState } from '../GameStates/LevelState';
+import { LevelState } from '../AppStates/LevelState';
 
 type Props = {
     gameState: GameState;
@@ -54,7 +54,7 @@ export const GameUI = ({ levelState, onButtonClick, gameState}: Props) => {
             }
             </S.MapArea>
 
-            <GameStats phase={gameState.level} lives={gameState.lives} mustClean={levelState.status==='LEVEL_NOT_STARTED'} mustRender={levelState.status==='LEVEL_IDLE'} totalCollected={gameState.points} />
+            <GameStats level={gameState.level} lives={gameState.lives} mustClean={levelState.status==='LEVEL_NOT_STARTED'} mustRender={levelState.status==='LEVEL_IDLE'} totalCollected={gameState.points} />
 
             <GameButtons onButtonClick={onButtonClick}/>
             

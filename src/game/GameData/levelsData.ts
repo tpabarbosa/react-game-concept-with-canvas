@@ -37,7 +37,7 @@ export const levels: LevelType= {
     },
     2: {
         background: 1,
-        objects: 1,
+        objects: 2,
         char: {
             initialPosition: {x: 7, y: 5},
             initialDirection: 'down',
@@ -75,8 +75,8 @@ export const levels: LevelType= {
         }
     },
     3: {
-        background: 1,
-        objects: 1,
+        background: 2,
+        objects: 2,
         char: {
             initialPosition: {x: 7, y: 10},
             initialDirection: 'down',

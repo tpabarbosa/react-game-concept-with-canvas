@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { mapDimensions } from "../../../GameData/mapDimensionsData";
-import { GameState } from "../../../GameStates/GameState";
+import { GameState } from "../../../AppStates/GameState";
 import { ValidDirections } from "../../../helpers/PositionAndDirection/DirectionsType";
 import { Position } from "../../../helpers/PositionAndDirection/PositionTypes";
 import { Character } from "./Character";

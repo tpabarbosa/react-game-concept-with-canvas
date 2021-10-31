@@ -4,35 +4,44 @@ export const Container = styled.div`
     text-align:center;
     position:absolute;
     top:410px;
-    left:0px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width: 400px;
-    padding:0  0px;
+    width: 360px;
     z-index: 100;
+    margin: 0 auto; 
+    display: flex;
+    align-items:center;
     
     button { 
         cursor:pointer;
         font-size:20px;
-        width: 50px;
+        width: 60px;
         height: 50px;
         border-radius:30%;
-        margin: 0 2px;
+        margin: 0px 2px 2px;
         border: 0;
         background-color: #cbcbd0;
-        /* :hover {
+        box-shadow:3px 3px 4px #24242a;
+        -webkit-tap-highlight-color: transparent;
+        :active {
             background-color:#767676;
-        } */
+        }
     } 
-
 
     #stateButton {
         margin-top: 10px;
-        width: 120px;
+        width: 140px;
         height: 50px;
         border-radius: 10px;
     }
+`;
+
+export const Background = styled.div`
+position: absolute;
+    top:430px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0c353e;
+    box-shadow:3px -3px 4px #24242a;
 `;
 
 export const DirectionsButtons = styled.div`
@@ -41,7 +50,6 @@ export const DirectionsButtons = styled.div`
     align-items: center;
     justify-content: space-around;
     width: 160px;
-
     div { 
         margin: 0;
         padding:0
@@ -49,5 +57,5 @@ export const DirectionsButtons = styled.div`
 `;
 
 export const StateButtons = styled.div`
-    margin: 0 30px; 
+    margin: 0 auto; 
 `;

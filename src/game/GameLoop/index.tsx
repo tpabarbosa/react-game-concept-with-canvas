@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import * as S from './styles';
 
-import { GameState } from '../GameStates/GameState';
-import { LevelState, LevelStatus } from '../GameStates/LevelState';
+import { GameState } from '../AppStates/GameState';
+import { LevelState, LevelStatus } from '../AppStates/LevelState';
 import { useLoopAnimation } from './LoopAnimation/useLoopAnimation';
 import { useEvent } from '../helpers/useEvent';
 
@@ -66,6 +66,7 @@ export const GameLoop = ({ onButtonClick, userLastInput, gameState, levelState}:
 
   // //keyHandler
   const handleKeyPress = (e: KeyboardEvent) => {
+    e.preventDefault();
     if (actualLevelState) {
       actualLevelState.onUserInput({type:'keypress', value:e},levelState, gameState);
     }

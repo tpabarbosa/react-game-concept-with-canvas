@@ -17,9 +17,15 @@ export const GameButtons = ({onButtonClick}: Props) => {
     }
 
     return (
+        <>
+        <S.Background />
         <S.Container>
+            
+            
             <S.StateButtons>
+                <div>
                 <button id={'stateButton'} onClick={handleGameStateButton} >Ação</button>
+                </div>
             </S.StateButtons>
             <S.DirectionsButtons>
             
@@ -36,5 +42,6 @@ export const GameButtons = ({onButtonClick}: Props) => {
             </S.DirectionsButtons>
             
         </S.Container>
+        </>
     )
 }

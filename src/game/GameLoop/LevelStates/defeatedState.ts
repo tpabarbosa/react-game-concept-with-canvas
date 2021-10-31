@@ -1,5 +1,5 @@
-import { GameState } from "../../GameStates/GameState";
-import { LevelState } from "../../GameStates/LevelState";
+import { GameState } from "../../AppStates/GameState";
+import { LevelState } from "../../AppStates/LevelState";
 import {  LevelStateFuncType, UserInputType } from "./LevelStateFunction";
 
 export const defeatedState =  (): LevelStateFuncType => {

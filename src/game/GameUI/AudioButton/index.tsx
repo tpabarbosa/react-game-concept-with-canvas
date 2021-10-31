@@ -15,8 +15,8 @@ export const AudioButton = ({audioPlayer}: Props) => {
 
     return (
         <S.Container>
-            {!muted && <div onClick={handleChangeMute}>🔊</div>}
-            {muted && <div onClick={handleChangeMute}>🔈</div>}
+            {!muted && <button onClick={handleChangeMute}>🔊</button>}
+            {muted && <button onClick={handleChangeMute}>🔈</button>}
             
         </S.Container>
     )

@@ -2,16 +2,21 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     font-size: 20px; 
-    width: 36px;
-    height: 36px;
-    margin: 10px 10px;
+    top: 3px;
+    left: 308px;
+    margin: 0 10px;
     cursor: pointer;
     position: absolute;
-    z-index: 100;
-    div { 
+    z-index: 3;
+    button { 
+        width: 32px;
+        height: 32px;
         box-sizing: border-box;
-        background-color: #adadb9;
+        background-color: white;
+        border: 0;
         border-radius: 100%;
-        padding: 5px
+        padding: 5px;
+        -webkit-tap-highlight-color: transparent; 
+
     }
 `;

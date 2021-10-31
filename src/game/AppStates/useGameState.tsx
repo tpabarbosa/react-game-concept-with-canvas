@@ -88,7 +88,7 @@ export const useGameState = (): GameState => {
         updatePoints,
         updateLoadedImages,
         setChar,
-    }},[setChar, state, transition, updateLives, updateLevel, updatePoints, updateLoadedImages, counterDown, audioPlayer])
+    }},[setChar, state.status, state.images, state.charType, state.charName, state.lives, state.level, state.points, transition, updateLives, updateLevel, updatePoints, updateLoadedImages, counterDown, audioPlayer])
 
     return toReturn;
 }

@@ -8,7 +8,7 @@ import { itemsTotalTiles} from '../GameData/Tiles/itemsTiles';
 import { mapTotalTiles } from "../GameData/Tiles/mapTiles";
 import { monstersTotalTiles } from "../GameData/Tiles/monstersTiles";
 import { charactersTotalTiles } from "../GameData/Tiles/charactersTiles";
-import { AppActions } from "../AppState";
+import { AppActions } from "../AppStates/AppState";
 
 
 type Props = {
@@ -42,7 +42,7 @@ export const ImagesBuffering = ({appTransition}: Props) => {
 
     useEffect(() => {
         if(mapBuffered.length === mapTotalTiles && bufferingState === 'NOT_STARTED') {
-           setBufferingState('MAP_BUFFERED');
+            setBufferingState('MAP_BUFFERED');
         }
         if(itemsBuffered.length === itemsTotalTiles && bufferingState === 'MAP_BUFFERED') {
             setBufferingState('ITEMS_BUFFERED');
