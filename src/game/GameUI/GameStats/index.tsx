@@ -60,7 +60,6 @@ export const GameStats = ({level, lives, mustClean, mustRender, totalCollected}:
     useEffect(() => {
         const img: HTMLImageElement | null = document.querySelector(`#char-tile-img`);
         const tilesize = charactersTiles.list[1].tilesize ?? charactersTiles.common?.tilesize;
-        console.log(tilesize)
         if (img && ctxLives && tilesize && mustRender) {
             for(let i = 0; i <3; i++) {
                 ctxLives.drawImage(
