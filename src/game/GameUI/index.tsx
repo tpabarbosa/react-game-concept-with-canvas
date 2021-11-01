@@ -18,6 +18,7 @@ export const GameUI = ({ levelState, onButtonClick, gameState}: Props) => {
         
         <>
         <S.Container>
+            
             <S.MapArea>
             {levelState.status==='COUNTING_DOWN' &&
                 <S.CounterDown>

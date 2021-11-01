@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import * as S from './styles';
 import { GameUI } from './GameUI';
 import { GameLoop } from './GameLoop';
 import { ValidDirections } from './helpers/PositionAndDirection/DirectionsType';
 import { ImagesBuffering } from './ImagesBuffering';
 import { useAppState } from './AppStates/useAppState';
+import { GameStartScreen } from './GameStartScreen';
 
 const App = () => {
   
@@ -25,11 +26,6 @@ const App = () => {
     gameState.transition('NEW_GAME_COMMAND');
   },[appTransition, gameState])
   
-  useEffect(() => {
-    if(appState.status==='APP_IDLE') {
-      handleGameStartCommand()
-    }
-  }, [appState.status, gameState, appTransition, handleGameStartCommand])
 
   return (
     <>
@@ -39,7 +35,7 @@ const App = () => {
       <ImagesBuffering appTransition={appTransition}/>
 
       {appState.status==='APP_IDLE' &&
-        <button onClick={handleGameStartCommand}> Iniciar Jogo</button>
+        <GameStartScreen gameStartCommand={handleGameStartCommand}/>
       }
 
       {appState.status==='GAME_STARTED' &&
